@@ -1,11 +1,11 @@
 from abc import abstractmethod
-from typing import Literal, Optional, Dict, Any
+from typing import Literal, Optional, Dict, Any, TypedDict
 from dataclasses import dataclass
 
 class Transformer():
 
     @abstractmethod
-    def run(self, endpoint:str, method:str, payload: Dict[str, Any]):
+    def run(self, endpoint:str, method:str, payload: TypedDict):
         pass
 
 @dataclass

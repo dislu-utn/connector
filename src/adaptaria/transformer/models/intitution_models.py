@@ -5,7 +5,7 @@ class DisluCreateInstitutionPayload(TypedDict):
     domain: str
 
 # Dictionary interface using TypedDict
-class AdaptariaCreateInstitutePayload(TypedDict):
+class AdaptariaCreateInstitutionPayload(TypedDict):
     name: str
     address: str
     phone: str

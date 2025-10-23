@@ -1,15 +1,14 @@
-from typing import TypedDict
+from typing import Any, Dict
 from src.dislu.utils.endpoints import DisluEndpoints
 from src.shared.provider import Provider
-from src.dislu.transformer.dislu_transformers import DisluInstitutionsTransformer
+from src.dislu.transformer.institutions_transformers import DisluInstitutionsTransformer
 
 
 class DisluProvider(Provider):
     
-    def transform(self, endpoint:str, method:str, payload: TypedDict): 
+    def transform(self, endpoint:str, method:str, payload: Dict[str, Any]): 
         if DisluEndpoints.INSTITUTIONS.value in endpoint:
             return DisluInstitutionsTransformer().run(endpoint, method, payload)
-
         if DisluEndpoints.COURSES.value in endpoint:
             pass
         if DisluEndpoints.ROADMAPS.value in endpoint:
@@ -20,10 +19,4 @@ class DisluProvider(Provider):
             pass
         if DisluEndpoints.USERS.value in endpoint:
             pass
-        return
-    
-    def execute(self, func, *args, **kwargs):
-        """
-        Recibe una función como parámetro y la ejecuta con los argumentos dados.
-        """
-        return func(*args, **kwargs)
+        return None

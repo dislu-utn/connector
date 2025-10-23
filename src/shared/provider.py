@@ -5,16 +5,42 @@ from src.shared.integrate_dto import IntegrateDTO
 from src.shared.transformer import TransformedRequest
 
 class Provider(ABC):
-    
+
+    def initialize(self, message:IntegrateDTO):
+        self.endpoint = message.endpoint
+        self.method = message.method
+        self.payload = message.payload
+
     @abstractmethod
-    def transform(self, endpoint:str, method:str, payload: TypedDict) -> TransformedRequest:
+    def transform(self) -> TransformedRequest:
         pass
 
-    def sync(self, message: IntegrateDTO):
-        transformed_request = self.transform(endpoint=message.endpoint, method=message.method, payload=message.payload)
+    def provide(self, request: TransformedRequest) -> requests.Response | None:
+        method = request.method.lower()
+        if method == "post":
+            response = requests.post(url=request.url, json=request.payload)
+        elif method == "patch":
+            response = requests.patch(url=request.url, json=request.payload)
+        elif method == "get":
+            response = requests.get(url=request.url, params=request.payload)
+        elif method == "put":
+            response = requests.put(url=request.url, json=request.payload)
+        elif method == "delete":
+            response = requests.delete(url=request.url, json=request.payload)
+        else:
+            return None
 
-        if transformed_request.method == "post":
-            requests.post(url= transformed_request.url, json=transformed_request.payload)
+        if not response.ok:
+            raise Exception(f"HTTP request failed with status code {response.status_code}: {response.text}")
+
+        return response
+
+
+    def sync(self):
+        #TODO: Ver tema de external reference
+        transformed_request = self.transform()
+        return self.provide(transformed_request)
+
         """
         SEGUIR Y TESTEAR ESTO
         """

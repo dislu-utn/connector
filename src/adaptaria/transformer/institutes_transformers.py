@@ -1,13 +1,16 @@
-from typing import Dict, Any
-from src.dislu.transformer.models.intitution_models import AdaptariaCreateInstitutePayload, DisluCreateInstitutionPayload
+from typing import Dict, Any, Literal
+
+from src.adaptaria.transformer.models import AdaptariaCreateInstitutePayload
+from src.dislu.transformer.models import DisluCreateInstitutionPayload
+
 from src.adaptaria.utils.endpoints import InstituteEndpoints
 from src.dislu.utils.endpoints import InstitutionEndpoints
 from src.shared.transformer import TransformedRequest, Transformer
 
 class AdaptariaInstitutesTransformer(Transformer):
 
-    def run(self, endpoint:str, method:str, body: AdaptariaCreateInstitutePayload):
-        if InstituteEndpoints.CREATE.value in endpoint:
+    def run(self, endpoint:str, method:Literal["post", "patch"], body: AdaptariaCreateInstitutePayload):
+        if method == "post":
             return self.institutes_create(endpoint, body)
         
         return None 

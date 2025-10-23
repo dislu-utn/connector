@@ -1,11 +1,7 @@
 from typing import TypedDict
 
-class DisluCreateInstitutionPayload(TypedDict):
-    name: str
-    domain: str
-
-# Dictionary interface using TypedDict
 class AdaptariaCreateInstitutePayload(TypedDict):
+    id: str
     name: str
     address: str
     phone: str

@@ -1,7 +1,8 @@
 from src.dislu.utils.endpoints import DisluEndpoints, InstitutionEndpoints
 from src.shared.integrate_dto  import IntegrateDTO
 from src.adaptaria.utils.endpoints import InstituteEndpoints
-from src.dislu.transformer.models.intitution_models import AdaptariaCreateInstitutePayload, DisluCreateInstitutionPayload
+from src.adaptaria.transformer.models import AdaptariaCreateInstitutePayload
+from src.dislu.transformer.models import DisluCreateInstitutionPayload
 from src.shared.transformer import TransformedRequest
 from test.shared.base_test import BaseTest
 
@@ -29,7 +30,8 @@ class InstitutionTest(BaseTest):
         )
         
         self.initialize(message.origin)
-        transformed_request = self.connector.transform(message)
+        self.connector.provider.initialize(message)
+        transformed_request = self.connector.provider.transform()
         
         # Expected result structure
         expected_body = {
@@ -53,9 +55,10 @@ class InstitutionTest(BaseTest):
             endpoint= InstituteEndpoints.CREATE.value,
             method="post"
         )
-
+        
         self.initialize(message.origin)
-        transformed_request = self.connector.transform(message)
+        self.connector.provider.initialize(message)
+        transformed_request = self.connector.provider.transform()
         
         # Expected result structure
         expected_body = {

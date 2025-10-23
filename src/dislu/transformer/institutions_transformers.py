@@ -1,7 +1,8 @@
 from src.adaptaria.utils.endpoints import InstituteEndpoints
 from src.dislu.utils.endpoints import InstitutionEndpoints
 from src.shared.transformer import TransformedRequest, Transformer
-from src.dislu.transformer.models.intitution_models import AdaptariaCreateInstitutePayload, DisluCreateInstitutionPayload
+from src.adaptaria.transformer.models import AdaptariaCreateInstitutePayload
+from src.dislu.transformer.models import DisluCreateInstitutionPayload
 
 class DisluInstitutionsTransformer(Transformer):
 

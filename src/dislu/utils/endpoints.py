@@ -10,3 +10,5 @@ class DisluEndpoints(Enum):
 
 class InstitutionEndpoints(Enum):
     CREATE = DisluEndpoints.INSTITUTIONS.value + "create"
+    UPDATE = DisluEndpoints.INSTITUTIONS.value + "update"
+

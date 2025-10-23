@@ -1,4 +1,4 @@
-from src.providers.provider import Provider
+from src.shared.provider import Provider
 
 
 class AdaptariaProvider(Provider):

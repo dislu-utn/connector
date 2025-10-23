@@ -1,19 +1,10 @@
-from flask import Flask, request
-from pydantic import BaseModel
+from flask import Flask
 
+from shared.integrate_dto import IntegrateDTO
 from src.connector import Connector
-
-class IntegrateDTO(BaseModel):
-    institution_id: str
-    origin: str #dislu or adaptaria
-    body: dict
-    endpoint: str #The endpoint used
-    method: str #
-    object: str # institution, student, study material, ext
 
 
 app = Flask(__name__)
-
 
 @app.route("/", methods=["POST"])
 def integrate(message: IntegrateDTO):

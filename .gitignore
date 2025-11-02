@@ -205,3 +205,5 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+peak-geode-468519-r3-5ee00511e9a6.json
+service_account.json

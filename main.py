@@ -1,6 +1,6 @@
 from flask import Flask
 
-from shared.integrate_dto import IntegrateDTO
+from src.shared.integrate_dto import IntegrateDTO
 from src.connector import Connector
 
 
@@ -18,3 +18,6 @@ def integrate(message: IntegrateDTO):
     return ("", 204)
 
 # Debería hacer después otro cloud run para actualizar los registros de las instituciones en Firebase, pero que este separado de esto así queda desacoplada esa lógica.
+
+if __name__ == "__main__":
+    app.run(host="localhost", port=5000, debug=True)

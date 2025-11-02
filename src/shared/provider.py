@@ -7,9 +7,10 @@ from src.shared.transformer import TransformedRequest
 class Provider(ABC):
 
     def initialize(self, message:IntegrateDTO):
-        self.endpoint = message.endpoint
+        self.institution_id = message.institution_id
+        self.entity = message.entity
+        self.entity_id = message.entity_id
         self.method = message.method
-        self.payload = message.payload
 
     @abstractmethod
     def transform(self) -> TransformedRequest:

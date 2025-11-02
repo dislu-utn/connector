@@ -44,5 +44,16 @@ class AdaptariaEndpoints(Enum):
     USERS = "/users"
     STUDENTS = "/students"
     ENROLLED_COURSES = "/students/me/courses"
-    ADD_STUDENT_TO_COURSE = "/courses/:courseId/students"
-    UPDATE_USER_ROLE = "/users/:userId/role"
+
+class AdaptariaCourseEndpoints(Enum):
+    CREATE = '/connector' + AdaptariaEndpoints.COURSES.value
+    ADD_STUDENT = '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/students"
+
+class AdaptariaUserEndpoints(Enum):
+    UPDATE = '/connector' + AdaptariaEndpoints.USERS.value + "/me"
+    UPDATE_ROLE = '/connector' + AdaptariaEndpoints.USERS.value + "/:userId/role"
+
+class AdaptariaStudentEndponints(Enum):
+    CREATE = '/connector' + AdaptariaEndpoints.STUDENTS.value
+    UPDATE = '/connector' + AdaptariaEndpoints.STUDENTS.value
+    GET = AdaptariaEndpoints.STUDENTS.value

@@ -1,6 +1,6 @@
 from src.to_dislu.utils.endpoints import CourseEndpoints, DisluEndpoints, InstitutionEndpoints, UsersEndpoints, UsersXCourseEndpoints
 from src.shared.transformer import TransformedRequest, Transformer
-from src.to_adaptaria.utils.endpoints import AdaptariaEndpoints
+from src.to_adaptaria.utils.endpoints import AdaptariaCourseEndpoints, AdaptariaEndpoints, AdaptariaStudentEndponints, AdaptariaUserEndpoints
 
 class AdaptariaUsersTransformer(Transformer):
 
@@ -18,7 +18,7 @@ class AdaptariaUsersTransformer(Transformer):
     
         dislu_user = self.dislu_api.request(UsersEndpoints.GET, "get", None, {"id": entity_id})
         response = self.adaptaria_api.request(
-            AdaptariaEndpoints.STUDENTS,
+            AdaptariaStudentEndponints.CREATE,
             "post",
             {
                 "firstName": dislu_user.get("name"),
@@ -34,8 +34,6 @@ class AdaptariaUsersTransformer(Transformer):
 
         return response
 
-
-    
 
     def update(self, entity: str, entity_id:str):
         #Acá el entity_id va a ser "user_id/course_id"
@@ -56,7 +54,7 @@ class AdaptariaUsersTransformer(Transformer):
         if (entity == "admin"):
             #Convertir a profesor
             self.adaptaria_api.request(
-                AdaptariaEndpoints.UPDATE_USER_ROLE,
+                AdaptariaUserEndpoints.UPDATE_ROLE,
                 "patch",
                 {
                     "newRole": "DIRECTOR"
@@ -72,7 +70,7 @@ class AdaptariaUsersTransformer(Transformer):
         ):
             #Usuario se enroló a un curso o el profesor ya tiene un curso
             response = self.adaptaria_api.request(
-                AdaptariaEndpoints.ADD_STUDENT_TO_COURSE,
+                AdaptariaCourseEndpoints.ADD_STUDENT,
                 "post",
                 {
                     "studentEmails": [dislu_user.get("email")]
@@ -88,7 +86,7 @@ class AdaptariaUsersTransformer(Transformer):
         if (entity == "professor") and (adaptaria_role == "STUDENT"):
             #Convertir a profesor
             self.adaptaria_api.request(
-                AdaptariaEndpoints.UPDATE_USER_ROLE,
+                AdaptariaUserEndpoints.UPDATE_ROLE,
                 "patch",
                 {
                     "newRole": "TEACHER"
@@ -101,13 +99,13 @@ class AdaptariaUsersTransformer(Transformer):
 
         if (entity == "professor") and (adaptaria_role == "TEACHER"):
             response = self.adaptaria_api.request(
-                AdaptariaEndpoints.COURSES,
+                AdaptariaCourseEndpoints.CREATE,
                 "create",
                 {
                     "title": dislu_course.get("name"),
                     "description": dislu_course.get("description"),
                     "matriculationCode": dislu_course.get("matriculation_key"),
-                    "teacherUserId": adaptaria_user.get("id") #Tengo que ver como hago para pasarle esto
+                    "teacherUserId": adaptaria_user.get("id")
                 }
             )
 
@@ -120,28 +118,19 @@ class AdaptariaUsersTransformer(Transformer):
             return response
 
     def update_user_fields(self, dislu_user: dict, adaptaria_user: dict):
-        """
-        Solo puedo actualizar la imagen de perfil
-        if dislu_user.get("name") != adaptaria_user.get("firstName"):
-            payload["firstName"] = dislu_user.get("name")
 
-        if dislu_user.get("surname") != adaptaria_user.get("lastName"):
-            payload["lastName"] = dislu_user.get("surname")
-
-        if dislu_user.get("email") != adaptaria_user.get("email"):
-            payload["email"] = dislu_user.get("email")
-
-
-        response = 
-        return response
-        """ 
         payload = {}
         if dislu_user.get("profile_picture") != adaptaria_user.get("profilePicture"):
             payload["profilePicture"] = dislu_user.get("profile_picture")
 
+        if not payload:
+            return None
+        
+        payload["userId"] = adaptaria_user.get("id")
+
         return self.adaptaria_api.request(
-            AdaptariaEndpoints.STUDENTS,
-            "post",
+            AdaptariaUserEndpoints.UPDATE,
+            "patch",
             payload
         )
 

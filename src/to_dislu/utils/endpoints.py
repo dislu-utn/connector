@@ -51,23 +51,23 @@ class DisluEndpoints(Enum):
     STUDY_MATERIALS = ""
 
 class InstitutionEndpoints(Enum):
-    CREATE = DisluEndpoints.INSTITUTIONS.value + "/create"
-    UPDATE = DisluEndpoints.INSTITUTIONS.value + "/update"
+    CREATE = "/connector" + DisluEndpoints.INSTITUTIONS.value + "/create"
+    UPDATE = "/connector" + DisluEndpoints.INSTITUTIONS.value + "/update"
     GET = DisluEndpoints.INSTITUTIONS.value #TODO
     GET_EXTERNAL = DisluEndpoints.INSTITUTIONS.value + "/get_external/:id" #Done
 
     
 
 class CourseEndpoints(Enum):
-    CREATE = DisluEndpoints.COURSES.value + "/create"
-    UPDATE = DisluEndpoints.COURSES.value + "/update"
+    CREATE = "/connector" + DisluEndpoints.COURSES.value + "/create"
+    UPDATE = "/connector" + DisluEndpoints.COURSES.value + "/modify_user"
     GET = DisluEndpoints.COURSES.value + "/:id"
     GET_EXTERNAL = DisluEndpoints.COURSES.value + "/get_external/:id" #Done
 
 
 class UsersEndpoints(Enum):
-    CREATE = DisluEndpoints.USERS.value + "/create"
-    UPDATE = DisluEndpoints.USERS.value + "/update"
+    CREATE = "/connector" + DisluEndpoints.USERS.value + "/create"
+    UPDATE = "/connector" + DisluEndpoints.USERS.value + "/update"
     GET = DisluEndpoints.USERS.value + "/:id"
     GET_EXTERNAL = DisluEndpoints.USERS.value + "/get_external/:id" #Done
     ENROLL = DisluEndpoints.USERS.value + "/enroll" #Lo recibe la entity user_x_course

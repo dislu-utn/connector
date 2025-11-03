@@ -6,7 +6,7 @@ from src.shared.transformer import TransformedRequest
 from src.to_dislu.utils.endpoints import DisluEndpoints, InstitutionEndpoints
 from src.shared.provider import Provider
 from src.to_dislu.transformer.users_transformers import DisluUsersTransformer
-from src.to_dislu.transformer.users_x_courses_transformers import DisluUsersXCoursesTransformer
+from to_dislu.transformer.roadmap_transformers import DisluRoadmapTransformer
 
 
 class DisluProvider(Provider):
@@ -19,4 +19,6 @@ class DisluProvider(Provider):
             return DisluCoursesTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
         if self.entity == ["user","student", "teacher", "director"]:
             return DisluUsersTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
+        if self.entity == "subject":
+            return DisluRoadmapTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
         return None

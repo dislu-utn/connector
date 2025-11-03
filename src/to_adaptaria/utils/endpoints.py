@@ -20,7 +20,9 @@ class AdaptariaAPI:
         if method == 'post':
             response = requests.post(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'get':
-            if "id" in payload:
+            if "id" in url_params:
+                endpoint += f"/{url_params["id"]}"
+            elif "id" in payload:
                 endpoint += f"/{payload["id"]}"
             response = requests.get(endpoint, cookies=cookies, **kwargs)
         elif method == 'put':
@@ -28,7 +30,9 @@ class AdaptariaAPI:
         elif method == 'delete':
             response = requests.delete(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'patch':
-            if "id" in payload:
+            if "id" in url_params:
+                endpoint += f"/{url_params["id"]}"
+            elif "id" in payload:
                 endpoint += f"/{payload["id"]}"
             response = requests.patch(endpoint, params=payload, cookies=cookies, **kwargs)
         else:
@@ -66,3 +70,6 @@ class AdaptariaStudentEndponints(Enum):
 
 class AdaptariaDirectorEndponints(Enum):
     CREATE = '/connector' + AdaptariaEndpoints.DIRECTOR.value
+
+class AdaptariaSectionEndpoints(Enum):
+    GET =  AdaptariaEndpoints.COURSES.value + "/:courseId/sections/:sectionId"

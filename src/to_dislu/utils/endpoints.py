@@ -80,3 +80,9 @@ class UsersEndpoints(Enum):
 class UsersXCourseEndpoints(Enum):
     GET_PROFESSOR_BY_EXTERNAL_ID = DisluEndpoints.USER_X_COURSE.value + "/get_professor_by_external_id"
     ENROLLED_COURSES = DisluEndpoints.USER_X_COURSE.value + "/courses"
+
+class RoadmapEndpoints(Enum):
+    CREATE = "/connector" + DisluEndpoints.ROADMAPS.value + "/create"
+    UPDATE = "/connector" + DisluEndpoints.ROADMAPS.value + "/update"
+    GET_EXTERNAL = DisluEndpoints.ROADMAPS.value + "/get_external/:id" #Done
+

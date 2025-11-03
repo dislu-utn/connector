@@ -74,8 +74,8 @@ class UsersEndpoints(Enum):
     GET = DisluEndpoints.USERS.value + "/:id"
     GET_EXTERNAL = DisluEndpoints.USERS.value + "/get_external/:id" #Done
     GET_HASHED_PASSWORD = "/connector" + DisluEndpoints.USERS.value + "/get_hashed_password"
-    ENROLL = DisluEndpoints.USERS.value + "/enroll" #Lo recibe la entity user_x_course
-    ASSIGN_PROFESSOR = DisluEndpoints.USERS.value + "/assign_professor" #Lo recibe la entity user_x_course
+    ENROLL = DisluEndpoints.USERS.value + "/enroll" 
+    ASSIGN_PROFESSOR = "/connector" + DisluEndpoints.USERS.value + "/assign_professor" 
 
 class UsersXCourseEndpoints(Enum):
     GET_PROFESSOR_BY_EXTERNAL_ID = DisluEndpoints.USER_X_COURSE.value + "/get_professor_by_external_id"

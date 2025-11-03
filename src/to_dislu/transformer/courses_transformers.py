@@ -1,3 +1,4 @@
+from ast import List
 import requests
 from src.to_dislu.utils.endpoints import CourseEndpoints, DisluEndpoints, InstitutionEndpoints
 from src.shared.transformer import TransformedRequest, Transformer
@@ -25,7 +26,8 @@ class DisluCoursesTransformer(Transformer):
             "name": adaptaria_course.get("title"),
             "description": adaptaria_course.get("description"),
             "matriculation_key": adaptaria_course.get("matriculationCode"),
-            "external_reference": adaptaria_course.get("id")
+            "external_reference": adaptaria_course.get("id"),
+            #"image": adaptaria_course.get("image")
         }
 
         response = self.dislu_api.request(CourseEndpoints.CREATE, "post", payload)
@@ -33,6 +35,11 @@ class DisluCoursesTransformer(Transformer):
         #En adaptaria cuando se crea el curso, se le asigna el profesor
         if teacher_id := adaptaria_course.get("teacherUserId"):
             DisluUsersTransformer().assign_professor("teacher", f"{teacher_id}/{entity_id}")
+
+        if students := adaptaria_course.get("students", []):
+            for student in students:
+                student: dict
+                DisluUsersTransformer().enroll("student", f"{student.get('userId')}/{entity_id}")
 
         return response
 
@@ -43,13 +50,15 @@ class DisluCoursesTransformer(Transformer):
         payload = {}
 
         if adaptaria_course.get("title") != dislu_course.get("name"):
-            payload["name"] = adaptaria_course.get("title")
+            payload["name"] = dislu_course.get("title")
 
         if adaptaria_course.get("description") != dislu_course.get("description"):
-            payload["description"] = adaptaria_course.get("description")
+            payload["description"] = dislu_course.get("description")
 
-        if adaptaria_course.get("matriculationCode") != dislu_course.get("matriculation_key"):
-            payload["matriculation_key"] = adaptaria_course.get("matriculationCode")
+        """ Por ahora no tenemos imagenes en los cursos de Dislu
+        if adaptaria_course.get("image") != dislu_course.get("image"):
+            payload["image"] = dislu_course.get("image")
+        """
 
         if not payload:
             return

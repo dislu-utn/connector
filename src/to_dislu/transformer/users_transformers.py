@@ -91,7 +91,6 @@ class DisluUsersTransformer(Transformer):
         payload = {
             "user_id": dislu_user,
             "course_id": dislu_course
-            #matriculation_key?: string;
         }
         
         return self.dislu_api.request(UsersEndpoints.ENROLL, "post", payload)

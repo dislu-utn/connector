@@ -85,4 +85,6 @@ class RoadmapEndpoints(Enum):
     CREATE = "/connector" + DisluEndpoints.ROADMAPS.value + "/create"
     UPDATE = "/connector" + DisluEndpoints.ROADMAPS.value + "/update"
     GET_EXTERNAL = DisluEndpoints.ROADMAPS.value + "/get_external/:id" #Done
+    GET = DisluEndpoints.ROADMAPS.value + "/:id"
+
 

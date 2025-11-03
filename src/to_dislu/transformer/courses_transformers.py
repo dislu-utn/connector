@@ -62,6 +62,7 @@ class DisluCoursesTransformer(Transformer):
         if not payload:
             return
 
+        payload["id"] = dislu_course.get("id")
         return self.dislu_api.request(CourseEndpoints.UPDATE, "post", payload)
         
 

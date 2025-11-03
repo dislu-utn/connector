@@ -9,7 +9,7 @@ class AdaptariaCoursesTransformer(Transformer):
 
         #El create del curso se maneja en users_transformers
         if "update" in method:
-            return self.create(entity, entity_id)
+            return self.update(entity, entity_id)
         
         return None 
 
@@ -35,8 +35,7 @@ class AdaptariaCoursesTransformer(Transformer):
         if not payload:
             return
 
-        payload["id"] = entity_id
 
-        return self.adaptaria_api.request(AdaptariaCourseEndpoints.UPDATE, "patch", payload)
+        return self.adaptaria_api.request(AdaptariaCourseEndpoints.UPDATE, "patch", payload, {"id": adaptaria_course.get("id")})
         
 

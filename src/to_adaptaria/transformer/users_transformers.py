@@ -119,7 +119,7 @@ class AdaptariaUsersTransformer(Transformer):
             )
 
 
-        if (entity == "professor") and (adaptaria_role == "TEACHER"):
+        if (entity == "professor"):
             response = self.adaptaria_api.request(
                 AdaptariaCourseEndpoints.CREATE,
                 "create",

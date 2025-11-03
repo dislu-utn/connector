@@ -28,7 +28,9 @@ class AdaptariaAPI:
         elif method == 'delete':
             response = requests.delete(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'patch':
-            response = requests.patch(endpoint, json=payload, cookies=cookies, **kwargs)
+            if "id" in payload:
+                endpoint += f"/{payload["id"]}"
+            response = requests.patch(endpoint, params=payload, cookies=cookies, **kwargs)
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
         
@@ -48,6 +50,7 @@ class AdaptariaEndpoints(Enum):
 
 class AdaptariaCourseEndpoints(Enum):
     CREATE = '/connector' + AdaptariaEndpoints.COURSES.value
+    UPDATE = '/connector' + AdaptariaEndpoints.COURSES.value
     ADD_STUDENT = '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/students"
 
 class AdaptariaUserEndpoints(Enum):

@@ -17,6 +17,6 @@ class DisluProvider(Provider):
             pass
         if self.entity == "course":
             return DisluCoursesTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
-        if self.entity == ["user", "student", "teacher"]:
+        if self.entity == ["user","student", "teacher", "director"]:
             return DisluUsersTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
         return None

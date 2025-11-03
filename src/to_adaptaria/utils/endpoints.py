@@ -43,6 +43,7 @@ class AdaptariaEndpoints(Enum):
     COURSES = "/courses"
     USERS = "/users"
     STUDENTS = "/students"
+    DIRECTOR = "/directors"
     ENROLLED_COURSES = "/students/me/courses"
 
 class AdaptariaCourseEndpoints(Enum):
@@ -50,6 +51,8 @@ class AdaptariaCourseEndpoints(Enum):
     ADD_STUDENT = '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/students"
 
 class AdaptariaUserEndpoints(Enum):
+    GET = '/connector' + AdaptariaEndpoints.USERS.value
+    GET_HASHED_PASSWORD = '/connector' + AdaptariaEndpoints.USERS.value + '/get_hashed_password'
     UPDATE = '/connector' + AdaptariaEndpoints.USERS.value + "/me"
     UPDATE_ROLE = '/connector' + AdaptariaEndpoints.USERS.value + "/:userId/role"
 
@@ -57,3 +60,6 @@ class AdaptariaStudentEndponints(Enum):
     CREATE = '/connector' + AdaptariaEndpoints.STUDENTS.value
     UPDATE = '/connector' + AdaptariaEndpoints.STUDENTS.value
     GET = AdaptariaEndpoints.STUDENTS.value
+
+class AdaptariaDirectorEndponints(Enum):
+    CREATE = '/connector' + AdaptariaEndpoints.DIRECTOR.value

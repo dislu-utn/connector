@@ -22,16 +22,19 @@ class DisluAPI:
         if method == 'post':
             response = requests.post(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'get':
+            if "id" in payload:
+                endpoint += f"/{payload["id"]}"
             response = requests.get(endpoint, cookies=cookies, **kwargs)
         elif method == 'put':
             response = requests.put(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'delete':
             response = requests.delete(endpoint, json=payload, cookies=cookies, **kwargs)
+        elif method == 'patch':
+            response = requests.patch(endpoint, json=payload, cookies=cookies, **kwargs)
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
-
+        
         print(f"[DisluAPI] {method.upper()} {endpoint} - Response: {response.status_code}")
-        print("Status Code:", response.url)
         return response.json()
 
     def update_external_reference(self, endpoint, id, external_id):
@@ -70,6 +73,7 @@ class UsersEndpoints(Enum):
     UPDATE = "/connector" + DisluEndpoints.USERS.value + "/update"
     GET = DisluEndpoints.USERS.value + "/:id"
     GET_EXTERNAL = DisluEndpoints.USERS.value + "/get_external/:id" #Done
+    GET_HASHED_PASSWORD = "/connector" + DisluEndpoints.USERS.value + "/get_hashed_password"
     ENROLL = DisluEndpoints.USERS.value + "/enroll" #Lo recibe la entity user_x_course
     ASSIGN_PROFESSOR = DisluEndpoints.USERS.value + "/assign_professor" #Lo recibe la entity user_x_course
 

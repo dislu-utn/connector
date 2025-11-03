@@ -1,6 +1,7 @@
+from jinja2 import Undefined
 from src.to_dislu.utils.endpoints import CourseEndpoints, DisluEndpoints, InstitutionEndpoints, UsersEndpoints, UsersXCourseEndpoints
 from src.shared.transformer import TransformedRequest, Transformer
-from src.to_adaptaria.utils.endpoints import AdaptariaCourseEndpoints, AdaptariaEndpoints, AdaptariaStudentEndponints, AdaptariaUserEndpoints
+from src.to_adaptaria.utils.endpoints import AdaptariaCourseEndpoints, AdaptariaDirectorEndponints, AdaptariaEndpoints, AdaptariaStudentEndponints, AdaptariaUserEndpoints
 
 class AdaptariaUsersTransformer(Transformer):
 
@@ -17,15 +18,35 @@ class AdaptariaUsersTransformer(Transformer):
         #Crear usuario de 0, lo creo como student
     
         dislu_user = self.dislu_api.request(UsersEndpoints.GET, "get", None, {"id": entity_id})
-        response = self.adaptaria_api.request(
-            AdaptariaStudentEndponints.CREATE,
-            "post",
-            {
-                "firstName": dislu_user.get("name"),
-                "lastName": dislu_user.get("surname"),
-                "email": dislu_user.get("email"),
-            }
-        )
+        dislu_hashed_password = self.dislu_api.request(UsersEndpoints.GET_HASHED_PASSWORD, "get", None, {"id": entity_id})
+
+        if entity == "student":
+            
+            response = self.adaptaria_api.request(
+                AdaptariaStudentEndponints.CREATE,
+                "post",
+                {
+                    "firstName": dislu_user.get("name"),
+                    "lastName": dislu_user.get("surname"),
+                    "email": dislu_user.get("email"),
+                    "password": dislu_hashed_password if dislu_hashed_password else None
+                }
+            )
+        elif entity == "admin":
+            response = self.adaptaria_api.request(
+                AdaptariaDirectorEndponints.CREATE,
+                "post",
+                {
+                    "firstName": dislu_user.get("name"),
+                    "lastName": dislu_user.get("surname"),
+                    "email": dislu_user.get("email"),
+                    "institute": {
+                        "id": self.institution_id
+                    },
+                    "password": dislu_hashed_password if dislu_hashed_password else None
+                }
+            )
+
         self.dislu_api.update_external_reference(
             UsersEndpoints.UPDATE, 
             dislu_user.get("id"), 
@@ -40,6 +61,7 @@ class AdaptariaUsersTransformer(Transformer):
 
         user_dislu_id, course_dislu_id = entity_id.split("/")
         dislu_user = self.dislu_api.request(UsersEndpoints.GET, "get", None, {"id": user_dislu_id})
+        
         dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", None, {"id": course_dislu_id})
 
 

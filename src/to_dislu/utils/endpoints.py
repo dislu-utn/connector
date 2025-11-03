@@ -63,7 +63,7 @@ class InstitutionEndpoints(Enum):
 
 class CourseEndpoints(Enum):
     CREATE = "/connector" + DisluEndpoints.COURSES.value + "/create"
-    UPDATE = "/connector" + DisluEndpoints.COURSES.value + "/modify_user"
+    UPDATE = "/connector" + DisluEndpoints.COURSES.value + "/update"
     GET = DisluEndpoints.COURSES.value + "/:id"
     GET_EXTERNAL = DisluEndpoints.COURSES.value + "/get_external/:id" #Done
 

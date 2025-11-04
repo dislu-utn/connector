@@ -12,7 +12,7 @@ class DisluAPI:
     def __init__(self):
         self.base_url = "http://localhost:4000/api"
 
-    def request(self, endpoint: Constant, method: str, payload=None, url_params=None, **kwargs) -> dict:
+    def request(self, endpoint: Constant, method: str, payload=None, url_params=None, files=None,**kwargs) -> dict:
         endpoint = self.base_url + endpoint.value
         if url_params:
             endpoint = self.fill_url(endpoint, url_params)
@@ -20,7 +20,7 @@ class DisluAPI:
         cookies = {"token": "123"}
         method = method.lower()
         if method == 'post':
-            response = requests.post(endpoint, json=payload, cookies=cookies, **kwargs)
+            response = requests.post(endpoint, json=payload, cookies=cookies, files=files **kwargs)
         elif method == 'get':
             if "id" in payload:
                 endpoint += f"/{payload["id"]}"
@@ -87,4 +87,5 @@ class RoadmapEndpoints(Enum):
     GET_EXTERNAL = DisluEndpoints.ROADMAPS.value + "/get_external/:id" #Done
     GET = DisluEndpoints.ROADMAPS.value + "/:id"
 
-
+class StudyMaterialEndpoints(Enum):
+    CREATE = "/connector" + DisluEndpoints.ROADMAPS.value + "/upload_study_material"

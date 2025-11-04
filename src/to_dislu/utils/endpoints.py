@@ -89,3 +89,4 @@ class RoadmapEndpoints(Enum):
 
 class StudyMaterialEndpoints(Enum):
     CREATE = "/connector" + DisluEndpoints.ROADMAPS.value + "/upload_study_material"
+    GET = "/connector/study_material/:id"

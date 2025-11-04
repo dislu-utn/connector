@@ -1,28 +1,21 @@
-from typing import Any, Dict
-
-from src.to_adaptaria.utils.endpoints import AdaptariaEndpoints
 from src.shared.provider import Provider
 from src.to_adaptaria.transformer.courses_transformer import AdaptariaCoursesTransformer
 from src.to_adaptaria.transformer.users_transformers import AdaptariaUsersTransformer
+from src.to_adaptaria.transformer.contents_transformer import AdaptariaContentsTransformer
+from src.to_adaptaria.transformer.subject_transformers import AdaptariaSubjectTransformer
 
 
 class AdaptariaProvider(Provider):
     
     def transform(self): 
         if self.entity == "course":
-            AdaptariaCoursesTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
+            return AdaptariaCoursesTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
         if self.entity == "roadmap":
-            pass
+            return AdaptariaSubjectTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
         if self.entity == "study_material":
-            pass
-        if self.entity == "user_x_course":
-            pass
-        if self.entity == ["user", "student", "professor", "admin"]:
-            AdaptariaUsersTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
-            pass
-        #if AdaptariaEndpoints.COURSES.value in endpoint:
-        #    pass
-
+            return AdaptariaContentsTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
+        if self.entity in ["user", "student", "professor", "admin"]:
+            return AdaptariaUsersTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
             
         return None
 

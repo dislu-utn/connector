@@ -10,7 +10,7 @@ class AdaptariaAPI:
     def __init__(self):
         self.base_url = "adaptaria.com"
 
-    def request(self, endpoint: Constant, method: str, payload=None, url_params=None, **kwargs) -> dict:
+    def request(self, endpoint: Constant, method: str, payload=None, url_params=None, files=None, **kwargs) -> dict:
         endpoint = self.base_url + endpoint.value
         if url_params:
             endpoint = self.fill_url(endpoint, url_params)
@@ -18,7 +18,7 @@ class AdaptariaAPI:
         cookies = {"id": "123"}
         method = method.lower()
         if method == 'post':
-            response = requests.post(endpoint, json=payload, cookies=cookies, **kwargs)
+            response = requests.post(endpoint, json=payload, cookies=cookies, files=files, **kwargs)
         elif method == 'get':
             if "id" in url_params:
                 endpoint += f"/{url_params["id"]}"
@@ -77,4 +77,5 @@ class AdaptariaSectionEndpoints(Enum):
     GET =  '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/sections/:sectionId"
 
 class AdaptariaContentEndpoints(Enum):
+    CREATE = "/connector/contents/:sectionId"
     GET =  '/connector/contents'

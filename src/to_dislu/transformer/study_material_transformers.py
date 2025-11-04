@@ -12,12 +12,11 @@ class DisluStudyMaterialTransformer(Transformer):
 
         if "create" in method:
             return self.create(entity, entity_id)
-        if "update" in method:
-            return self.update(entity, entity_id)
 
         return None 
 
     def create(self, entity: str, entity_id:str):
+        
         adaptaria_content = self.adaptaria_api.request(AdaptariaContentEndpoints.GET, "get", None, {"id":entity_id})
         dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET_EXTERNAL, "get", None, {"id": adaptaria_content.get("sectionId")})
 
@@ -35,7 +34,7 @@ class DisluStudyMaterialTransformer(Transformer):
         
         # Obtener el nombre del archivo desde la key o usar un nombre por defecto
         file_key = adaptaria_content.get("key", "document.pdf")
-        file_name = file_key.split("/")[-1] if "/" in file_key else file_key
+        file_name = adaptaria_content.get("title") if adaptaria_content.get("title") else file_key.split("/")[-1] if "/" in file_key else file_key
         
         # Crear un objeto tipo archivo en memoria
         file_content = io.BytesIO(file_response.content)
@@ -54,28 +53,3 @@ class DisluStudyMaterialTransformer(Transformer):
             None,
             files
         )
-
-    def update(self, entity: str, entity_id:str):
-        adaptaria_course = self.adaptaria_api.request(AdaptariaEndpoints.COURSES, "get", None,{"id":entity_id})
-        dislu_course = self.dislu_api.request(CourseEndpoints.GET_EXTERNAL, "get", None,{"id": entity_id})
-
-        payload = {}
-
-        if adaptaria_course.get("title") != dislu_course.get("name"):
-            payload["name"] = dislu_course.get("title")
-
-        if adaptaria_course.get("description") != dislu_course.get("description"):
-            payload["description"] = dislu_course.get("description")
-
-        """ Por ahora no tenemos imagenes en los cursos de Dislu
-        if adaptaria_course.get("image") != dislu_course.get("image"):
-            payload["image"] = dislu_course.get("image")
-        """
-
-        if not payload:
-            return
-
-        payload["id"] = dislu_course.get("id")
-        return self.dislu_api.request(CourseEndpoints.UPDATE, "post", payload)
-        
-

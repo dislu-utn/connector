@@ -6,8 +6,8 @@ from src.shared.transformer import TransformedRequest
 from src.to_dislu.utils.endpoints import DisluEndpoints, InstitutionEndpoints
 from src.shared.provider import Provider
 from src.to_dislu.transformer.users_transformers import DisluUsersTransformer
-from to_dislu.transformer.roadmap_transformers import DisluRoadmapTransformer
-from to_dislu.transformer.study_material_transformers import DisluStudyMaterialTransformer
+from src.to_dislu.transformer.roadmap_transformers import DisluRoadmapTransformer
+from src.to_dislu.transformer.study_material_transformers import DisluStudyMaterialTransformer
 
 
 class DisluProvider(Provider):

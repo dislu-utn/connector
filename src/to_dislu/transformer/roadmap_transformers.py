@@ -3,7 +3,7 @@ import requests
 from src.to_dislu.utils.endpoints import CourseEndpoints, DisluEndpoints, InstitutionEndpoints, RoadmapEndpoints
 from src.shared.transformer import TransformedRequest, Transformer
 from src.to_adaptaria.utils.endpoints import AdaptariaEndpoints, AdaptariaSectionEndpoints
-from to_dislu.transformer.users_transformers import DisluUsersTransformer
+from src.to_dislu.transformer.users_transformers import DisluUsersTransformer
 
 class DisluRoadmapTransformer(Transformer):
 

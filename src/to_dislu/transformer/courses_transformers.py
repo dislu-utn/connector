@@ -3,7 +3,7 @@ import requests
 from src.to_dislu.utils.endpoints import CourseEndpoints, DisluEndpoints, InstitutionEndpoints
 from src.shared.transformer import TransformedRequest, Transformer
 from src.to_adaptaria.utils.endpoints import AdaptariaEndpoints
-from to_dislu.transformer.users_transformers import DisluUsersTransformer
+from src.to_dislu.transformer.users_transformers import DisluUsersTransformer
 
 class DisluCoursesTransformer(Transformer):
 

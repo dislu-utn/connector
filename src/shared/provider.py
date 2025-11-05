@@ -3,8 +3,12 @@ from typing import TypedDict
 import requests
 from src.shared.integrate_dto import IntegrateDTO
 from src.shared.transformer import TransformedRequest
+from to_adaptaria.utils.endpoints import AdaptariaAPI
+from to_dislu.utils.endpoints import DisluAPI
 
 class Provider(ABC):
+    adaptaria_api = AdaptariaAPI()
+    dislu_api = DisluAPI()
 
     def initialize(self, message:IntegrateDTO):
         self.institution_id = message.institution_id
@@ -14,6 +18,10 @@ class Provider(ABC):
 
     @abstractmethod
     def transform(self) -> TransformedRequest:
+        pass
+
+    @abstractmethod
+    def initial_sync(self):
         pass
 
     def provide(self, request: TransformedRequest) -> requests.Response | None:

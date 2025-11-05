@@ -12,12 +12,18 @@ def integrate(message: IntegrateDTO):
     - Capaz podría chequear en la db si hay que dejar pasar la request o talvez crear una condición en PubSub para bocharlos antes
 
     """
-    if not Connector(message.origin).integrate(message):
+
+    connector = Connector(message.origin)
+
+    if message.method == "sync":
+        response = connector.initial_sync(message)
+    else:
+        response = connector.integrate(message)
+
+    if not response:
         return ("", 500)
 
     return ("", 204)
-
-# Debería hacer después otro cloud run para actualizar los registros de las instituciones en Firebase, pero que este separado de esto así queda desacoplada esa lógica.
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5000, debug=True)

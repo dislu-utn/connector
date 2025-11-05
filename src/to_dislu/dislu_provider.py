@@ -8,12 +8,13 @@ from src.shared.provider import Provider
 from src.to_dislu.transformer.users_transformers import DisluUsersTransformer
 from src.to_dislu.transformer.roadmap_transformers import DisluRoadmapTransformer
 from src.to_dislu.transformer.study_material_transformers import DisluStudyMaterialTransformer
+from to_adaptaria.utils.endpoints import AdaptariaEndpoints
 
 
 class DisluProvider(Provider):
     
     def transform(self): 
-        if self.entity == "institution":
+        if self.entity == "institute":
             #return DisluInstitutionsTransformer().run(self.entity_id, self.endpoint, self.method, self.payload)
             pass
         if self.entity == "course":
@@ -26,3 +27,7 @@ class DisluProvider(Provider):
             return DisluStudyMaterialTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)
 
         return None
+
+    def initial_sync(self):
+
+        pass

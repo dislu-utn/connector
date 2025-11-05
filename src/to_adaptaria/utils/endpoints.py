@@ -79,3 +79,8 @@ class AdaptariaSectionEndpoints(Enum):
 class AdaptariaContentEndpoints(Enum):
     CREATE = "/connector/contents/:sectionId"
     GET =  '/connector/contents'
+
+class AdaptariaInstituteEndpoints(Enum):
+    CREATE = '/connector' + AdaptariaEndpoints.INSTITUTES.value
+    UPDATE = '/connector' + AdaptariaEndpoints.INSTITUTES.value + '/:id'
+    GET = '/connector' + AdaptariaEndpoints.INSTITUTES.value + '/:id'

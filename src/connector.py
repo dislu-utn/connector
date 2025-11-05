@@ -17,12 +17,12 @@ class Connector():
         else:
             raise Exception("Invalid origin")
     
-    def integrate(self, message: IntegrateDTO) -> bool: 
-        """
-        - Busco los servicios en la db a los que me tengo que integrar
-        - Fijarme en la base de datos si esta ok la suscripcion a ambos servicios
-        """
+    def integrate(self, message: IntegrateDTO): 
+
         self.provider.initialize(message)
-        self.provider.sync(entity=message.entity, method=message.method, payload=message.payload)
-        # Send the request
-        return True
+        return self.provider.transform()
+
+    def initial_sync(self, message: IntegrateDTO): 
+
+        self.provider.initial_sync(message)
+        return self.provider.transform()

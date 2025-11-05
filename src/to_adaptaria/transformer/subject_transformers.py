@@ -34,11 +34,13 @@ class AdaptariaSubjectTransformer(Transformer):
             if not dislu_roadmap:
                 raise ValidationError("Roadmap not found in Dislu", entity=entity, entity_id=entity_id)
             
+            dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", None, {"id": dislu_roadmap.get("course_id")})
+
             # Validar campos requeridos
             if not dislu_roadmap.get("name"):
                 raise ValidationError("Roadmap name is required", entity=entity, entity_id=entity_id)
-            if not dislu_roadmap.get("course_id"):
-                raise ValidationError("Roadmap course_id is required", entity=entity, entity_id=entity_id)
+            if not dislu_course.get("external_reference"):
+                raise ValidationError("Roadmap course external_reference is required", entity=entity, entity_id=entity_id)
             
             connector_logger.debug(f"Creating section: {dislu_roadmap.get('name')} for course {dislu_roadmap.get('course_id')}")
             
@@ -51,7 +53,7 @@ class AdaptariaSubjectTransformer(Transformer):
                     "visible": True
                 },
                 {
-                    "courseId": dislu_roadmap.get("course_id")
+                    "courseId": dislu_course.get("external_reference")
                 }
             )
             
@@ -109,7 +111,7 @@ class AdaptariaSubjectTransformer(Transformer):
                     "visible": True
                 },
                 {
-                    "courseId": dislu_roadmap.get("course_id"),
+                    "courseId": adaptaria_section.get("courseId"),
                     "sectionId": dislu_roadmap.get("external_reference")
                 }
             )

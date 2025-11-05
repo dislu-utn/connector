@@ -56,10 +56,13 @@ class DisluEndpoints(Enum):
 class InstitutionEndpoints(Enum):
     CREATE = "/connector" + DisluEndpoints.INSTITUTIONS.value + "/create"
     UPDATE = "/connector" + DisluEndpoints.INSTITUTIONS.value + "/update"
-    GET = DisluEndpoints.INSTITUTIONS.value #TODO
+    GET = DisluEndpoints.INSTITUTIONS.value
     GET_EXTERNAL = DisluEndpoints.INSTITUTIONS.value + "/get_external/:id" #Done
-
-    
+    LIST_ADMINS = DisluEndpoints.INSTITUTIONS.value + "/:id/admins"
+    LIST_USERS = DisluEndpoints.INSTITUTIONS.value + "/:id/users"
+    LIST_PROFESSORS = DisluEndpoints.INSTITUTIONS.value + "/:id/professors"
+    LIST_STUDENTS = DisluEndpoints.INSTITUTIONS.value + "/:id/students"
+    LIST_ROADMAPS = DisluEndpoints.INSTITUTIONS.value + "/:id/roadmaps"
 
 class CourseEndpoints(Enum):
     CREATE = "/connector" + DisluEndpoints.COURSES.value + "/create"
@@ -86,6 +89,7 @@ class RoadmapEndpoints(Enum):
     UPDATE = "/connector" + DisluEndpoints.ROADMAPS.value + "/update"
     GET_EXTERNAL = DisluEndpoints.ROADMAPS.value + "/get_external/:id" #Done
     GET = DisluEndpoints.ROADMAPS.value + "/:id"
+    LIST_STUDY_MATERIALS = DisluEndpoints.ROADMAPS.value + "/:id/materials"
 
 class StudyMaterialEndpoints(Enum):
     CREATE = "/connector" + DisluEndpoints.ROADMAPS.value + "/upload_study_material"

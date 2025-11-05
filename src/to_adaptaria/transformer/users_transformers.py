@@ -162,7 +162,7 @@ class AdaptariaUsersTransformer(Transformer):
 
             if (
                 (entity == "student" and adaptaria_role == "STUDENT") or
-                (entity == "professor" and adaptaria_course.get("teacherUserId"))
+                (entity == "professor" and adaptaria_course.get("teacherUserId") and adaptaria_role == "STUDENT")
             ):
                 #Usuario se enroló a un curso o el profesor ya tiene un curso
                 connector_logger.info(f"Adding student {dislu_user.get('email')} to course {dislu_course.get('name')}")

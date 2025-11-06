@@ -8,10 +8,11 @@ from src.to_adaptaria.utils.endpoints import AdaptariaAPI
 from src.to_dislu.utils.endpoints import DisluAPI
 
 class Transformer():
-    adaptaria_api = AdaptariaAPI()
-    dislu_api = DisluAPI()
+
 
     def __init__(self, institution_id) -> None:
+        self.adaptaria_api = AdaptariaAPI()
+        self.dislu_api = DisluAPI()
         self.institution_id = institution_id
 
     @abstractmethod

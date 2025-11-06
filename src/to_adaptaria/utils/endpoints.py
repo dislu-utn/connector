@@ -118,6 +118,8 @@ class AdaptariaCourseEndpoints(Enum):
     CREATE = '/connector' + AdaptariaEndpoints.COURSES.value
     UPDATE = '/connector' + AdaptariaEndpoints.COURSES.value
     ADD_STUDENT = '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/students"
+    GET_SECTIONS = '/connector' + AdaptariaEndpoints.COURSES.value + "/:id/sections"
+    GET_STUDENTS = '/connector' + AdaptariaEndpoints.COURSES.value + "/:id/students"
 
 class AdaptariaUserEndpoints(Enum):
     GET = '/connector' + AdaptariaEndpoints.USERS.value
@@ -137,6 +139,7 @@ class AdaptariaSectionEndpoints(Enum):
     CREATE = '/connector' + 'AdaptariaEndpoints.COURSES.value' + '/:courseId/sections'
     UPDATE = '/connector' + 'AdaptariaEndpoints.COURSES.value' + '/:courseId/sections/:sectionId'
     GET =  '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/sections/:sectionId"
+    GET_CONTENTS = '/connector/sections/:id/contents'
 
 class AdaptariaContentEndpoints(Enum):
     CREATE = "/connector/contents/:sectionId"
@@ -146,3 +149,7 @@ class AdaptariaInstituteEndpoints(Enum):
     CREATE = '/connector' + AdaptariaEndpoints.INSTITUTES.value
     UPDATE = '/connector' + AdaptariaEndpoints.INSTITUTES.value + '/:id'
     GET = '/connector' + AdaptariaEndpoints.INSTITUTES.value + '/:id'
+    GET_COURSES = '/connector' + AdaptariaEndpoints.INSTITUTES.value + '/:id/courses'
+    GET_DIRECTORS = '/connector' + AdaptariaEndpoints.INSTITUTES.value + '/:id/directors'
+    GET_STUDENTS = '/connector' + AdaptariaEndpoints.INSTITUTES.value + '/:id/students'
+    GET_TEACHERS = '/connector' + AdaptariaEndpoints.INSTITUTES.value + '/:id/teachers'

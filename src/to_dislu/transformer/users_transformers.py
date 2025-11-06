@@ -10,9 +10,25 @@ class DisluUsersTransformer(Transformer):
             connector_logger.info(f"Starting DisluUsersTransformer - Entity: {entity}, ID: {entity_id}, Method: {method}")
             
             if "create" in method:
-                result = self.create(entity, entity_id)
-                connector_logger.info(f"Successfully created user in Dislu - Entity: {entity}, ID: {entity_id}")
-                return result
+                # Detectar si el entity_id tiene formato "user_id/course_id"
+                # En ese caso, es una asignación de profesor o matrícula de estudiante
+                if "/" in entity_id:
+                    if entity == "teacher":
+                        result = self.assign_professor(entity, entity_id)
+                        connector_logger.info(f"Successfully assigned professor in Dislu - ID: {entity_id}")
+                        return result
+                    elif entity == "student":
+                        result = self.enroll(entity, entity_id)
+                        connector_logger.info(f"Successfully enrolled student in Dislu - ID: {entity_id}")
+                        return result
+                    else:
+                        raise ValidationError(f"Invalid entity '{entity}' for course assignment format", entity=entity, entity_id=entity_id)
+                else:
+                    # Crear usuario normal
+                    result = self.create(entity, entity_id)
+                    connector_logger.info(f"Successfully created user in Dislu - Entity: {entity}, ID: {entity_id}")
+                    return result
+                    
             if "update" in method:
                 result = self.update(entity, entity_id)
                 connector_logger.info(f"Successfully updated user in Dislu - Entity: {entity}, ID: {entity_id}")

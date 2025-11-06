@@ -5,11 +5,11 @@ from src.to_adaptaria.transformer.courses_transformer import AdaptariaCoursesTra
 from src.to_adaptaria.transformer.users_transformers import AdaptariaUsersTransformer
 from src.to_adaptaria.transformer.contents_transformer import AdaptariaContentsTransformer
 from src.to_adaptaria.transformer.subject_transformers import AdaptariaSubjectTransformer
-from to_adaptaria.transformer.institute_transformer import AdaptariaInstituteTransformer
-from to_adaptaria.utils.endpoints import AdaptariaEndpoints, AdaptariaInstituteEndpoints
-from to_dislu.transformer.courses_transformers import DisluCoursesTransformer
-from to_dislu.transformer.institution_transformers import DisluInstitutionTransformer
-from to_dislu.utils.endpoints import InstitutionEndpoints, RoadmapEndpoints, UsersEndpoints
+from src.to_adaptaria.transformer.institute_transformer import AdaptariaInstituteTransformer
+from src.to_adaptaria.utils.endpoints import AdaptariaEndpoints, AdaptariaInstituteEndpoints
+from src.to_dislu.transformer.courses_transformers import DisluCoursesTransformer
+from src.to_dislu.transformer.institution_transformers import DisluInstitutionTransformer
+from src.to_dislu.utils.endpoints import InstitutionEndpoints, RoadmapEndpoints, UsersEndpoints
 
 
 class AdaptariaProvider(Provider):

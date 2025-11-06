@@ -3,8 +3,8 @@ from typing import TypedDict
 import requests
 from src.shared.integrate_dto import IntegrateDTO
 from src.shared.transformer import TransformedRequest
-from to_adaptaria.utils.endpoints import AdaptariaAPI
-from to_dislu.utils.endpoints import DisluAPI
+from src.to_adaptaria.utils.endpoints import AdaptariaAPI
+from src.to_dislu.utils.endpoints import DisluAPI
 
 class Provider(ABC):
     adaptaria_api = AdaptariaAPI()

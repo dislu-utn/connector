@@ -1,36 +1,53 @@
 from ast import Constant
 from enum import Enum
 from http.client import HTTPResponse
+import os
+from dotenv import load_dotenv
 
 import requests
 import re
 
 from urllib3.util import url
 
+load_dotenv()
+
 class DisluAPI:
 
     def __init__(self):
-        self.base_url = "http://localhost:4000/api"
+        # TODO: En producción cambiar a HTTPS
+        self.base_url = os.getenv("DISLU_BASE_URL", "http://localhost:4000/api")
+        self.secret = os.getenv("DISLU_SECRET")
+        
+        if not self.secret:
+            raise ValueError("DISLU_SECRET no está configurado en las variables de entorno")
+        
+        # Advertencia si se usa HTTP en producción
+        if not self.base_url.startswith("https://") and "localhost" not in self.base_url:
+            print("[WARNING] DisluAPI: Usando HTTP en lugar de HTTPS. Esto NO es seguro para producción.")
 
     def request(self, endpoint: Constant, method: str, payload=None, url_params=None, files=None,**kwargs) -> dict:
         endpoint = self.base_url + endpoint.value
         if url_params:
             endpoint = self.fill_url(endpoint, url_params)
 
-        cookies = {"token": "123"}
+        # Usar el DISLU_SECRET en el header Authorization
+        headers = kwargs.get('headers', {})
+        headers['Authorization'] = f'Bearer {self.secret}'
+        kwargs['headers'] = headers
+        
         method = method.lower()
         if method == 'post':
-            response = requests.post(endpoint, json=payload, cookies=cookies, files=files **kwargs)
+            response = requests.post(endpoint, json=payload, files=files, **kwargs)
         elif method == 'get':
-            if "id" in payload:
-                endpoint += f"/{payload["id"]}"
-            response = requests.get(endpoint, cookies=cookies, **kwargs)
+            if payload and "id" in payload:
+                endpoint += f"/{payload['id']}"
+            response = requests.get(endpoint, **kwargs)
         elif method == 'put':
-            response = requests.put(endpoint, json=payload, cookies=cookies, **kwargs)
+            response = requests.put(endpoint, json=payload, **kwargs)
         elif method == 'delete':
-            response = requests.delete(endpoint, json=payload, cookies=cookies, **kwargs)
+            response = requests.delete(endpoint, json=payload, **kwargs)
         elif method == 'patch':
-            response = requests.patch(endpoint, json=payload, cookies=cookies, **kwargs)
+            response = requests.patch(endpoint, json=payload, **kwargs)
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
         

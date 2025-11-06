@@ -8,7 +8,7 @@ from src.shared.provider import Provider
 from src.to_dislu.transformer.users_transformers import DisluUsersTransformer
 from src.to_dislu.transformer.roadmap_transformers import DisluRoadmapTransformer
 from src.to_dislu.transformer.study_material_transformers import DisluStudyMaterialTransformer
-from to_adaptaria.utils.endpoints import AdaptariaEndpoints
+from src.to_adaptaria.utils.endpoints import AdaptariaEndpoints
 
 
 class DisluProvider(Provider):

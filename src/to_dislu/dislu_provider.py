@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 import requests
+from src.shared.integrate_dto import IntegrateDTO
 from src.to_dislu.transformer.courses_transformers import DisluCoursesTransformer
 from src.shared.transformer import TransformedRequest
 from src.to_dislu.utils.endpoints import DisluEndpoints, InstitutionEndpoints

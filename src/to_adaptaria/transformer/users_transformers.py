@@ -35,6 +35,9 @@ class AdaptariaUsersTransformer(Transformer):
             if not dislu_user:
                 raise ValidationError(f"User not found in Dislu", entity=entity, entity_id=entity_id)
             
+            if dislu_user.get("external_reference"):
+                 raise ValidationError("User in Dislu already has an external reference", entity=entity, entity_id=entity_id)
+
             connector_logger.debug(f"Retrieved Dislu user: {dislu_user.get('email')}")
             
             dislu_hashed_password = self.dislu_api.request(UsersEndpoints.GET_HASHED_PASSWORD, "get", None, {"id": entity_id})

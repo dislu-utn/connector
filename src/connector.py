@@ -24,5 +24,5 @@ class Connector():
 
     def initial_sync(self, message: IntegrateDTO): 
 
-        self.provider.initial_sync(message)
-        return self.provider.transform()
+        self.provider.initialize(message)
+        return self.provider.initial_sync()

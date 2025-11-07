@@ -37,7 +37,7 @@ class AdaptariaProvider(Provider):
             POST /institutes/
             → Guarda: instituteId
         """
-
+        print(self.institution_id)
         self.dislu_api.request(InstitutionEndpoints.GET, "get", None, {"id": self.institution_id})
         AdaptariaInstituteTransformer(self.institution_id).run("institution", self.entity_id, "create")
         

@@ -101,7 +101,7 @@ class AdaptariaAPI:
             raise ValueError(f"Unsupported HTTP method: {method}")
         
         print(f"[AdaptarIA] {method.upper()} {endpoint} - Response: {response.status_code}")
-        return response.json()
+        return response.json().get("data", {})
 
     def fill_url(self, url, params):
         return re.sub(r":(\w+)", lambda m: str(params.get(m.group(1), m.group(0))), url)

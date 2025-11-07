@@ -32,15 +32,17 @@ class DisluAPI:
 
         # Usar el DISLU_SECRET en el header Authorization
         headers = kwargs.get('headers', {})
-        headers['Authorization'] = f'Bearer {self.secret}'
+        headers['authorization'] = f'Bearer {self.secret}'
         kwargs['headers'] = headers
         
         method = method.lower()
         if method == 'post':
             response = requests.post(endpoint, json=payload, files=files, **kwargs)
         elif method == 'get':
-            if payload and "id" in payload:
-                endpoint += f"/{payload['id']}"
+            if "id" in url_params:
+                endpoint += f"/{url_params["id"]}"
+            elif "id" in payload:
+                endpoint += f"/{payload["id"]}"
             response = requests.get(endpoint, **kwargs)
         elif method == 'put':
             response = requests.put(endpoint, json=payload, **kwargs)
@@ -52,6 +54,10 @@ class DisluAPI:
             raise ValueError(f"Unsupported HTTP method: {method}")
         
         print(f"[DisluAPI] {method.upper()} {endpoint} - Response: {response.status_code}")
+
+        if not response.ok:
+            response.raise_for_status()
+
         return response.json()
 
     def update_external_reference(self, endpoint, id, external_id):

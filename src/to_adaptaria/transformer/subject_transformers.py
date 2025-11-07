@@ -34,6 +34,9 @@ class AdaptariaSubjectTransformer(Transformer):
             if not dislu_roadmap:
                 raise ValidationError("Roadmap not found in Dislu", entity=entity, entity_id=entity_id)
             
+            if dislu_roadmap.get("external_reference"):
+                 raise ValidationError("Roadmap in Dislu already has an external reference", entity=entity, entity_id=entity_id)
+            
             dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", None, {"id": dislu_roadmap.get("course_id")})
 
             # Validar campos requeridos

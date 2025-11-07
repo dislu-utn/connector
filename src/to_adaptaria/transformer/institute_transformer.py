@@ -40,16 +40,20 @@ class AdaptariaInstituteTransformer(Transformer):
             if not dislu_institution:
                 raise ValidationError("Institution not found in Dislu", entity=entity, entity_id=entity_id)
             
+            if dislu_institution.get("external_reference"):
+                 raise ValidationError("Institution in Dislu already has an external reference", entity=entity, entity_id=entity_id)
+
             connector_logger.debug(f"Retrieved Dislu institution: {dislu_institution.get('name')}")
 
+            print(dislu_institution)
             # Validar campos requeridos
             if not dislu_institution.get("name"):
                 raise ValidationError("Institution name is required", entity=entity, entity_id=entity_id)
 
             payload = {
                 "name": dislu_institution.get("name"),
-                "address": "",  # Mapear domain a address
-                "phone": ""  # Campo requerido en Adaptaria pero no existe en Dislu
+                "address": "-",  # Mapear domain a address
+                "phone": "-"  # Campo requerido en Adaptaria pero no existe en Dislu
             }
 
             connector_logger.info(f"Creating institute in Adaptaria: {payload['name']}")
@@ -58,7 +62,7 @@ class AdaptariaInstituteTransformer(Transformer):
                 "post",
                 payload
             )
-            
+            print(response)
             if not response or not response.get("id"):
                 raise APIRequestError("Failed to create institute in Adaptaria - no ID returned", entity=entity, entity_id=entity_id)
             

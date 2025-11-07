@@ -34,6 +34,10 @@ class AdaptariaContentsTransformer(Transformer):
             if not dislu_study_material:
                 raise ValidationError("Study material not found in Dislu", entity=entity, entity_id=entity_id)
             
+            if dislu_study_material.get("external_reference"):
+                 raise ValidationError("Study material in Dislu already has an external reference", entity=entity, entity_id=entity_id)
+
+            
             connector_logger.debug(f"Study material: {dislu_study_material.get('name')}")
 
             dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET, "get", {"id":dislu_study_material.get("roadmap_id")})

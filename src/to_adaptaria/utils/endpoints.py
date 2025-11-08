@@ -68,11 +68,11 @@ class AdaptariaAPI:
             connector_logger.debug("Not authenticated, attempting to authenticate")
             self.auth()
  
-    def request(self, endpoint: Constant, method: str, payload=None, url_params=None, files=None, **kwargs) -> dict:
+    def request(self, endpoint: Constant, method: str, payload={}, url_params={}, files=None, **kwargs) -> dict:
         # Asegurar autenticación antes de cada petición
         self._ensure_authenticated()
-        
         endpoint = self.base_url + endpoint.value
+        id_in_url = ":id" in endpoint
         if url_params:
             endpoint = self.fill_url(endpoint, url_params)
 
@@ -80,11 +80,12 @@ class AdaptariaAPI:
         cookies = {"access_token": self.jwt_token}
         method = method.lower()
         if method == 'post':
+            connector_logger.info(f"[AdaptariaAPI] POST {endpoint} | Payload: {payload} | Files: {files} | Cookies: {cookies}")
             response = requests.post(endpoint, json=payload, cookies=cookies, files=files, **kwargs)
         elif method == 'get':
-            if "id" in url_params:
+            if "id" in url_params and not id_in_url:
                 endpoint += f"/{url_params["id"]}"
-            elif "id" in payload:
+            elif "id" in payload and not id_in_url:
                 endpoint += f"/{payload["id"]}"
             response = requests.get(endpoint, cookies=cookies, **kwargs)
         elif method == 'put':
@@ -96,12 +97,21 @@ class AdaptariaAPI:
                 endpoint += f"/{url_params["id"]}"
             elif "id" in payload:
                 endpoint += f"/{payload["id"]}"
-            response = requests.patch(endpoint, params=payload, cookies=cookies, **kwargs)
+            response = requests.patch(endpoint, json=payload, cookies=cookies, **kwargs)
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
-        
+            
         print(f"[AdaptarIA] {method.upper()} {endpoint} - Response: {response.status_code}")
-        return response.json().get("data", {})
+        
+        # Manejar respuestas sin contenido o sin JSON
+        if response.status_code == 204 or not response.content:
+            return {}
+        
+        try:
+            return response.json().get("data", {})
+        except requests.exceptions.JSONDecodeError:
+            # Si la respuesta no es JSON, retornar objeto vacío
+            return {}
 
     def fill_url(self, url, params):
         return re.sub(r":(\w+)", lambda m: str(params.get(m.group(1), m.group(0))), url)
@@ -117,6 +127,7 @@ class AdaptariaEndpoints(Enum):
 class AdaptariaCourseEndpoints(Enum):
     CREATE = '/connector' + AdaptariaEndpoints.COURSES.value
     UPDATE = '/connector' + AdaptariaEndpoints.COURSES.value
+    GET = '/connector' + AdaptariaEndpoints.COURSES.value
     ADD_STUDENT = '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/students"
     GET_SECTIONS = '/connector' + AdaptariaEndpoints.COURSES.value + "/:id/sections"
     GET_STUDENTS = '/connector' + AdaptariaEndpoints.COURSES.value + "/:id/students"
@@ -136,8 +147,8 @@ class AdaptariaDirectorEndponints(Enum):
     CREATE = '/connector' + AdaptariaEndpoints.DIRECTOR.value
 
 class AdaptariaSectionEndpoints(Enum):
-    CREATE = '/connector' + 'AdaptariaEndpoints.COURSES.value' + '/:courseId/sections'
-    UPDATE = '/connector' + 'AdaptariaEndpoints.COURSES.value' + '/:courseId/sections/:sectionId'
+    CREATE = '/connector' + AdaptariaEndpoints.COURSES.value + '/:courseId/sections'
+    UPDATE = '/connector' + AdaptariaEndpoints.COURSES.value + '/:courseId/sections/:sectionId'
     GET =  '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/sections/:sectionId"
     GET_CONTENTS = '/connector/sections/:id/contents'
 

@@ -25,8 +25,9 @@ class DisluAPI:
         if not self.base_url.startswith("https://") and "localhost" not in self.base_url:
             print("[WARNING] DisluAPI: Usando HTTP en lugar de HTTPS. Esto NO es seguro para producción.")
 
-    def request(self, endpoint: Constant, method: str, payload=None, url_params=None, files=None,**kwargs) -> dict:
+    def request(self, endpoint: Constant, method: str, payload={}, url_params={}, files=None,**kwargs) -> dict:
         endpoint = self.base_url + endpoint.value
+        id_in_url = ":id" in endpoint
         if url_params:
             endpoint = self.fill_url(endpoint, url_params)
 
@@ -39,10 +40,11 @@ class DisluAPI:
         if method == 'post':
             response = requests.post(endpoint, json=payload, files=files, **kwargs)
         elif method == 'get':
-            if "id" in url_params:
+            if "id" in url_params and not id_in_url:
                 endpoint += f"/{url_params["id"]}"
-            elif "id" in payload:
+            elif "id" in payload and not id_in_url:
                 endpoint += f"/{payload["id"]}"
+            print(f"[DisluAPI] GET {endpoint} | Headers: {kwargs.get('headers', {})} | Params: {url_params} | Payload: {payload}")
             response = requests.get(endpoint, **kwargs)
         elif method == 'put':
             response = requests.put(endpoint, json=payload, **kwargs)
@@ -58,7 +60,15 @@ class DisluAPI:
         if not response.ok:
             response.raise_for_status()
 
-        return response.json()
+        # Manejar respuestas sin contenido o sin JSON
+        if response.status_code == 204 or not response.content:
+            return {}
+        
+        try:
+            return response.json()
+        except requests.exceptions.JSONDecodeError:
+            # Si la respuesta no es JSON, retornar objeto vacío
+            return {}
 
     def update_external_reference(self, endpoint, id, external_id):
         payload = {"id":id, "external_reference":external_id}

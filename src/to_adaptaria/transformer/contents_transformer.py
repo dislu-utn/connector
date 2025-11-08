@@ -30,7 +30,7 @@ class AdaptariaContentsTransformer(Transformer):
         try:
             connector_logger.info(f"Creating content in Adaptaria from study material - ID: {entity_id}")
             
-            dislu_study_material = self.dislu_api.request(StudyMaterialEndpoints.GET, "get", {"id":entity_id})
+            dislu_study_material = self.dislu_api.request(StudyMaterialEndpoints.GET, "get", {}, {"id":entity_id})
             if not dislu_study_material:
                 raise ValidationError("Study material not found in Dislu", entity=entity, entity_id=entity_id)
             
@@ -38,9 +38,9 @@ class AdaptariaContentsTransformer(Transformer):
                  raise ValidationError("Study material in Dislu already has an external reference", entity=entity, entity_id=entity_id)
 
             
-            connector_logger.debug(f"Study material: {dislu_study_material.get('name')}")
+            connector_logger.info(f"Study material: {dislu_study_material.get('name')}")
 
-            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET, "get", {"id":dislu_study_material.get("roadmap_id")})
+            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET, "get", {}, {"id":dislu_study_material.get("roadmap_id")})
             if not dislu_roadmap:
                 connector_logger.warning(f"Roadmap not found for study material {entity_id}")
                 return None
@@ -82,9 +82,6 @@ class AdaptariaContentsTransformer(Transformer):
                 },
                 files
             )
-            
-            if not response:
-                raise APIRequestError("Failed to create content in Adaptaria", entity=entity, entity_id=entity_id)
             
             connector_logger.info(f"Content created successfully in Adaptaria")
             return response

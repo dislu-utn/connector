@@ -30,14 +30,16 @@ class AdaptariaSubjectTransformer(Transformer):
         try:
             connector_logger.info(f"Creating section in Adaptaria from roadmap - ID: {entity_id}")
             
-            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET, "get", None, {"id": entity_id})
+            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET, "get", {}, {"id": entity_id})
+            print(dislu_roadmap)
             if not dislu_roadmap:
                 raise ValidationError("Roadmap not found in Dislu", entity=entity, entity_id=entity_id)
             
             if dislu_roadmap.get("external_reference"):
                  raise ValidationError("Roadmap in Dislu already has an external reference", entity=entity, entity_id=entity_id)
             
-            dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", None, {"id": dislu_roadmap.get("course_id")})
+            dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", {}, {"id": dislu_roadmap.get("course_id")})
+            print(dislu_course)
 
             # Validar campos requeridos
             if not dislu_roadmap.get("name"):
@@ -53,17 +55,27 @@ class AdaptariaSubjectTransformer(Transformer):
                 {
                     "name": dislu_roadmap.get("name"),
                     "description": dislu_roadmap.get("description") or "",
-                    "visible": True
+                    "visible": True,
+                    "image": "https://picsum.photos/300/200"
                 },
                 {
                     "courseId": dislu_course.get("external_reference")
                 }
             )
             
-            if not response:
-                raise APIRequestError("Failed to create section in Adaptaria", entity=entity, entity_id=entity_id)
+            if not response or not response.get("id"):
+                raise APIRequestError("Failed to create section in Adaptaria - no ID returned", entity=entity, entity_id=entity_id)
             
-            connector_logger.info(f"Section created successfully in Adaptaria")
+            connector_logger.info(f"Section created successfully in Adaptaria - ID: {response.get('id')}")
+            
+            # Actualizar referencia externa en Dislu
+            self.dislu_api.update_external_reference(
+                RoadmapEndpoints.UPDATE,
+                dislu_roadmap.get("id"),
+                response.get("id")
+            )
+            
+            connector_logger.info(f"External reference updated in Dislu for roadmap {entity_id}")
             return response
             
         except (ValidationError, APIRequestError) as e:
@@ -77,14 +89,14 @@ class AdaptariaSubjectTransformer(Transformer):
         try:
             connector_logger.info(f"Updating section in Adaptaria - Roadmap ID: {entity_id}")
             
-            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET, "get", None, {"id": entity_id})
+            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET, "get", {}, {"id": entity_id})
             if not dislu_roadmap:
                 raise ValidationError("Roadmap not found in Dislu", entity=entity, entity_id=entity_id)
             
             if not dislu_roadmap.get("external_reference"):
                 raise ValidationError("Roadmap has no external reference", entity=entity, entity_id=entity_id)
                 
-            adaptaria_section = self.adaptaria_api.request(AdaptariaSectionEndpoints.GET, "get", None, {"id": dislu_roadmap.get("external_reference")})
+            adaptaria_section = self.adaptaria_api.request(AdaptariaSectionEndpoints.GET, "get", {}, {"id": dislu_roadmap.get("external_reference")})
             if not adaptaria_section:
                 raise ValidationError("Section not found in Adaptaria", entity=entity, entity_id=dislu_roadmap.get("external_reference"))
 

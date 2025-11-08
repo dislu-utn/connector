@@ -1,3 +1,5 @@
+from ast import List
+from math import exp
 from flask import request
 import requests
 from src.shared.provider import Provider
@@ -31,15 +33,17 @@ class AdaptariaProvider(Provider):
         return None
 
     def initial_sync(self):
+        #'''
         """
             TODO VER DE INICIALIZAR UNA CUENTA ADMIN EN ADAPTARIA
             # Crear Instituto (como ADMIN)
             POST /institutes/
             → Guarda: instituteId
         """
-        print(self.institution_id)
-        self.dislu_api.request(InstitutionEndpoints.GET, "get", None, {"id": self.institution_id})
-        AdaptariaInstituteTransformer(self.institution_id).run("institution", self.entity_id, "create")
+        try:
+            self.dislu_api.request(InstitutionEndpoints.GET, "get", {}, {"id": self.institution_id})
+            AdaptariaInstituteTransformer(self.institution_id).run("institution", self.entity_id, "create")
+        except Exception as e: print(e)
         
         """
             TODO VER DE INICIALIZAR UNA CUENTA ADMIN EN ADAPTARIA
@@ -48,67 +52,85 @@ class AdaptariaProvider(Provider):
             Body: { ..., instituteId }
             → Guarda: directorUserId
         """
-        dislu_directors = self.dislu_api.request(InstitutionEndpoints.LIST_ADMINS, "get", None, {"id": self.institution_id})
-        if dislu_directors:
-            for director in dislu_directors:
-                director:dict
-                AdaptariaUsersTransformer(self.institution_id).run("admin", director.get("id"), "create")
-
+        try:
+            dislu_directors = self.dislu_api.request(InstitutionEndpoints.LIST_ADMINS, "get", {}, {"id": self.institution_id})
+            if dislu_directors:
+                for director in dislu_directors:
+                    director:dict
+                    AdaptariaUsersTransformer(self.institution_id).run("admin", director.get("id"), "create")
+        except Exception as e: print(e)
         """
             # Crear Student 
             POST /students/
             Headers: { Authorization: "Bearer <sessionToken>" }
             → Guarda: studentUserId
         """
-        dislu_users = self.dislu_api.request(InstitutionEndpoints.LIST_USERS, "get", None, {"id": self.institution_id})
-        if dislu_users:
-            for user in dislu_users:
-                user:dict
-                AdaptariaUsersTransformer(self.institution_id).run("student", user.get("id"), "create")
-
+        try:
+            dislu_users = self.dislu_api.request(InstitutionEndpoints.LIST_USERS, "get", {}, {"id": self.institution_id})
+            if dislu_users:
+                for user in dislu_users:
+                    user:dict
+                    AdaptariaUsersTransformer(self.institution_id).run("student", user.get("id"), "create")
+        except Exception as e: print(e)
+        
         """
             # Crear Teacher 
             POST /teachers/
             Headers: { Authorization: "Bearer <sessionToken>" }
             → Guarda: teacherUserId
         """
-        dislu_professors = self.dislu_api.request(InstitutionEndpoints.LIST_PROFESSORS, "get", None, {"id": self.institution_id})
-        if dislu_professors:
-            for user in dislu_professors:
-                user:dict
-                AdaptariaUsersTransformer(self.institution_id).run("professor", user.get("user_id") +'/' + user.get("course_id"), "update")
+        try:
+            dislu_professors = self.dislu_api.request(InstitutionEndpoints.LIST_PROFESSORS, "get", {}, {"id": self.institution_id})
+            if dislu_professors:
+                for user in dislu_professors:
+                    if (self.dislu_api.request(UsersEndpoints.GET, "get", {}, {"id": user.get("user_id")})).get("is_admin"):
+                        continue
+                    user:dict
+                    AdaptariaUsersTransformer(self.institution_id).run("professor", user.get("user_id") +'/' + user.get("course_id"), "update")
+        except Exception as e: print(e)
 
         """
             # Agregar estudiantes al curso
             POST /courses/:courseId/students
             Body: { studentEmails: ["student@..."] }
         """
-        dislu_students = self.dislu_api.request(InstitutionEndpoints.LIST_STUDENTS, "get", None, {"id": self.institution_id})
-        if dislu_students:
-            for user in dislu_students:
-                user:dict
-                AdaptariaUsersTransformer(self.institution_id).run("professor", user.get("user_id") +'/' + user.get("course_id"), "update")
+        try:
+            dislu_students = self.dislu_api.request(InstitutionEndpoints.LIST_STUDENTS, "get", {}, {"id": self.institution_id})
+            if dislu_students:
+                for user in dislu_students:
+                    user:dict
+                    AdaptariaUsersTransformer(self.institution_id).run("student", user.get("user_id") +'/' + user.get("course_id"), "update")
+        except Exception as e: print(e)
 
         """
             # Crear Section
             POST /courses/:courseId/section
             → Guarda: sectionId
         """
-        dislu_roadmaps = self.dislu_api.request(InstitutionEndpoints.LIST_ROADMAPS, "get", None, {"id": self.institution_id})
-        for roadmap in dislu_roadmaps:
-            roadmap:dict
-            AdaptariaSubjectTransformer(self.institution_id).run("roadmap", roadmap.get("id"), "create")
-            
-            """
-                # Agregar Content
-                POST /courses/:courseId/sections/:sectionId/contents
-                Content-Type: multipart/form-data
-                Body: FormData con file + metadata
-            """
-            dislu_study_material = self.dislu_api.request(RoadmapEndpoints.LIST_STUDY_MATERIALS, "get", None, {"id":  roadmap.get("id")})
-            for study_material in dislu_study_material:
-                study_material:dict
-                AdaptariaContentsTransformer(self.institution_id).run("study_material", study_material.get("id"), "create")
+        #'''
+        try:
+            dislu_roadmaps = self.dislu_api.request(InstitutionEndpoints.LIST_ROADMAPS, "get", {}, {"id": self.institution_id})
+            for roadmap in dislu_roadmaps:
+                roadmap:dict
+                if not (roadmap := roadmap.get("roadmap")):
+                    continue
+                
+                print("ROADMAP")
+                print(roadmap)
+                AdaptariaSubjectTransformer(self.institution_id).run("roadmap", roadmap.get("id"), "create")
+                
+                """
+                    # Agregar Content
+                    POST /courses/:courseId/sections/:sectionId/contents
+                    Content-Type: multipart/form-data
+                    Body: FormData con file + metadata
+                """
+                dislu_study_material  = self.dislu_api.request(RoadmapEndpoints.LIST_STUDY_MATERIALS, "get", {}, {"id":  roadmap.get("id")})
+                print("STUDYMATERIALL")
+                for study_material in dislu_study_material:
+                    study_material:dict
+                    AdaptariaContentsTransformer(self.institution_id).run("study_material", study_material.get("id"), "create")
+        except Exception as e: print(e)
 
 
         return True

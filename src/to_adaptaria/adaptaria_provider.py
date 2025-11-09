@@ -16,6 +16,13 @@ from src.to_dislu.utils.endpoints import InstitutionEndpoints, RoadmapEndpoints,
 
 class AdaptariaProvider(Provider):
     
+    def validate_request(self, institution_id: str):
+        dislu_inst = self.dislu_api.request(InstitutionEndpoints.GET, "get", {}, {"id": institution_id})
+        if not dislu_inst.get("external_reference"):
+            raise PermissionError("forbidden")
+
+
+
     def transform(self): 
         if self.entity == "course":
             return AdaptariaCoursesTransformer(self.institution_id).run(self.entity, self.entity_id, self.method)

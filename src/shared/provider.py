@@ -21,6 +21,10 @@ class Provider(ABC):
         pass
 
     @abstractmethod
+    def validate_request(self, institution_id:str):
+        pass
+
+    @abstractmethod
     def initial_sync(self):
         pass
 
@@ -43,15 +47,3 @@ class Provider(ABC):
             raise Exception(f"HTTP request failed with status code {response.status_code}: {response.text}")
 
         return response
-
-
-    def sync(self):
-        #TODO: Ver tema de external reference
-        transformed_request = self.transform()
-        return self.provide(transformed_request)
-
-        """
-        SEGUIR Y TESTEAR ESTO
-        """
-        
-        pass

@@ -18,7 +18,7 @@ class Connector():
             raise Exception("Invalid origin")
     
     def integrate(self, message: IntegrateDTO): 
-
+        self.provider.validate_request(message.institution_id)
         self.provider.initialize(message)
         return self.provider.transform()
 

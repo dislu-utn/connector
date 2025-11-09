@@ -14,7 +14,12 @@ from src.shared.logger import connector_logger
 
 
 class DisluProvider(Provider):
-    
+
+    def validate_request(self, institution_id: str):
+        inst = self.dislu_api.request(InstitutionEndpoints.GET_EXTERNAL, "get", {}, {"id": institution_id})
+        if not inst:
+            raise PermissionError("forbidden")
+
     def transform(self): 
         if self.entity == "institute":
             #return DisluInstitutionsTransformer().run(self.entity_id, self.endpoint, self.method, self.payload)

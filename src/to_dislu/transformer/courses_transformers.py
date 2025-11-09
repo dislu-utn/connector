@@ -107,10 +107,10 @@ class DisluCoursesTransformer(Transformer):
                 payload["description"] = adaptaria_course.get("description")
                 connector_logger.debug(f"Description needs update")
 
-            """ Por ahora no tenemos imagenes en los cursos de Dislu
-            if adaptaria_course.get("image") != dislu_course.get("image"):
-                payload["image"] = dislu_course.get("image")
-            """
+            
+            if adaptaria_course.get("image") != dislu_course.get("image_link"):
+                payload["image"] = adaptaria_course.get("image_link")
+            
 
             if not payload:
                 connector_logger.info(f"No course fields need updating for {entity_id}")

@@ -131,11 +131,14 @@ class AdaptariaUsersTransformer(Transformer):
             response = None
             connector_logger.info(f"Updating user in Adaptaria - Entity: {entity}, ID: {entity_id}")
             
-            # Validar y parsear entity_id
-            if "/" not in entity_id:
-                raise ValidationError("Invalid entity_id format, expected 'user_id/course_id'", entity=entity, entity_id=entity_id)
+            if "/" in entity_id:
+                user_dislu_id, course_dislu_id = entity_id.split("/")
+                dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", {}, {"id": course_dislu_id})
+                if not dislu_course:
+                    raise ValidationError(f"Course not found in Dislu", entity=entity, entity_id=course_dislu_id)
+            else:
+                user_dislu_id = entity_id
 
-            user_dislu_id, course_dislu_id = entity_id.split("/")
             connector_logger.info(f"Parsed IDs - User: {user_dislu_id}, Course: {course_dislu_id}")
             
             # Obtener datos de Dislu
@@ -143,9 +146,6 @@ class AdaptariaUsersTransformer(Transformer):
             if not dislu_user:
                 raise ValidationError(f"User not found in Dislu", entity=entity, entity_id=user_dislu_id)
             
-            dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", {}, {"id": course_dislu_id})
-            if not dislu_course:
-                raise ValidationError(f"Course not found in Dislu", entity=entity, entity_id=course_dislu_id)
 
             # Obtener referencias externas
             if not dislu_user.get("external_reference"):
@@ -158,6 +158,10 @@ class AdaptariaUsersTransformer(Transformer):
                 
             adaptaria_role = adaptaria_user.get("role")
             connector_logger.info(f"Adaptaria user role: {adaptaria_role}")
+
+            if (entity == "user"):
+                connector_logger.info(f"Updating user fields for {dislu_user.get('email')}")
+                return self.update_user_fields(dislu_user, adaptaria_user)
 
             if (entity == "professor") and (adaptaria_role == "STUDENT"):
                 #Convertir a profesor
@@ -204,11 +208,6 @@ class AdaptariaUsersTransformer(Transformer):
             if not adaptaria_course:
                 raise APIRequestError("Course not found in Adaptaria", entity=entity, entity_id=dislu_course.get("external_reference"))
 
-
-
-            if (entity == "user"):
-                connector_logger.info(f"Updating user fields for {dislu_user.get('email')}")
-                return self.update_user_fields(dislu_user, adaptaria_user)
 
             if (entity == "admin"):
                 #Convertir a director

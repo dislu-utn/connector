@@ -61,4 +61,6 @@ def integrate():
         return jsonify({"error": str(e)}), 400
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=6000, debug=True)
+    host = os.environ.get("HOST", "localhost")
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host=host, port=port, debug=True)

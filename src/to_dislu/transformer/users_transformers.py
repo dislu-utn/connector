@@ -45,17 +45,17 @@ class DisluUsersTransformer(Transformer):
         try:
             connector_logger.info(f"Creating user in Dislu from Adaptaria - ID: {entity_id}")
             
-            dislu_institution = self.dislu_api.request(InstitutionEndpoints.GET_EXTERNAL, "get", None, {"id": self.institution_id})
+            dislu_institution = self.dislu_api.request(InstitutionEndpoints.GET_EXTERNAL, "get", {}, {"id": self.institution_id})
             if not dislu_institution:
                 raise ValidationError(f"Institution not found in Dislu with external ID: {self.institution_id}", entity=entity)
             
-            adaptaria_user = self.adaptaria_api.request(AdaptariaUserEndpoints.GET, "get", None, {"id":entity_id})
+            adaptaria_user = self.adaptaria_api.request(AdaptariaUserEndpoints.GET, "get", {}, {"id":entity_id})
             if not adaptaria_user:
                 raise ValidationError("User not found in Adaptaria", entity=entity, entity_id=entity_id)
             
             connector_logger.debug(f"Retrieved Adaptaria user: {adaptaria_user.get('email')}")
             
-            adaptaria_hashed_password = self.adaptaria_api.request(AdaptariaUserEndpoints.GET_HASHED_PASSWORD, "get", None, {"id":entity_id})
+            adaptaria_hashed_password = self.adaptaria_api.request(AdaptariaUserEndpoints.GET_HASHED_PASSWORD, "get", {}, {"id":entity_id})
             
             # Validar campos requeridos
             if not adaptaria_user.get("firstName"):
@@ -74,10 +74,10 @@ class DisluUsersTransformer(Transformer):
                 "is_admin": True if adaptaria_user.get("role") == "DIRECTOR" else False,
                 "password": adaptaria_hashed_password
             }
-            
+
             connector_logger.info(f"Creating user in Dislu: {payload['email']}")
             response = self.dislu_api.request(UsersEndpoints.CREATE, "post", payload)
-            
+
             if not response:
                 raise APIRequestError("Failed to create user in Dislu", entity=entity, entity_id=entity_id)
             
@@ -95,18 +95,18 @@ class DisluUsersTransformer(Transformer):
         try:
             connector_logger.info(f"Updating user in Dislu from Adaptaria - ID: {entity_id}")
             
-            adaptaria_user = self.adaptaria_api.request(AdaptariaEndpoints.USERS, "get", None, {"id":entity_id})
+            adaptaria_user = self.adaptaria_api.request(AdaptariaEndpoints.USERS, "get", {}, {"id":entity_id})
             if not adaptaria_user:
                 raise ValidationError("User not found in Adaptaria", entity=entity, entity_id=entity_id)
                 
-            dislu_user = self.dislu_api.request(UsersEndpoints.GET_EXTERNAL, "get", None, {"id": entity_id})
+            dislu_user = self.dislu_api.request(UsersEndpoints.GET_EXTERNAL, "get", {}, {"id": entity_id})
             if not dislu_user:
                 raise ValidationError("User not found in Dislu with external reference", entity=entity, entity_id=entity_id)
 
             connector_logger.debug(f"Comparing users - Adaptaria: {adaptaria_user.get('email')}, Dislu: {dislu_user.get('email')}")
 
-            dislu_hashed_password = self.dislu_api.request(UsersEndpoints.GET_HASHED_PASSWORD, "get", None, {"id": dislu_user.get("id")})
-            adaptaria_hashed_password = self.adaptaria_api.request(AdaptariaUserEndpoints.GET_HASHED_PASSWORD, "get", None, {"id":entity_id})
+            dislu_hashed_password = self.dislu_api.request(UsersEndpoints.GET_HASHED_PASSWORD, "get", {}, {"id": dislu_user.get("id")})
+            adaptaria_hashed_password = self.adaptaria_api.request(AdaptariaUserEndpoints.GET_HASHED_PASSWORD, "get", {}, {"id":entity_id})
 
             payload = {}
 
@@ -164,11 +164,12 @@ class DisluUsersTransformer(Transformer):
             professor_external_reference, course_external_reference = entity_id.split("/")
             connector_logger.debug(f"Professor: {professor_external_reference}, Course: {course_external_reference}")
             
-            dislu_user = self.dislu_api.request(UsersEndpoints.GET_EXTERNAL, "get", None, {"id": professor_external_reference})
-            if not dislu_user:
-                raise ValidationError("Professor not found in Dislu with external reference", entity=entity, entity_id=professor_external_reference)
-            
-            dislu_course = self.dislu_api.request(CourseEndpoints.GET_EXTERNAL, "get", None, {"id": course_external_reference})
+            try:
+                dislu_user = self.dislu_api.request(UsersEndpoints.GET_EXTERNAL, "get", {}, {"id": professor_external_reference})
+            except:
+                dislu_user = self.run("user", professor_external_reference, "create")
+
+            dislu_course = self.dislu_api.request(CourseEndpoints.GET_EXTERNAL, "get", {}, {"id": course_external_reference})
             if not dislu_course:
                 raise ValidationError("Course not found in Dislu with external reference", entity=entity, entity_id=course_external_reference)
 
@@ -200,17 +201,19 @@ class DisluUsersTransformer(Transformer):
             student_external_reference, course_external_reference = entity_id.split("/")
             connector_logger.debug(f"Student: {student_external_reference}, Course: {course_external_reference}")
             
-            dislu_user = self.dislu_api.request(UsersEndpoints.GET_EXTERNAL, "get", None, {"id": student_external_reference})
-            if not dislu_user:
-                raise ValidationError("Student not found in Dislu with external reference", entity=entity, entity_id=student_external_reference)
+            try:
+                dislu_user = self.dislu_api.request(UsersEndpoints.GET_EXTERNAL, "get", {}, {"id": student_external_reference})
+            except:
+                dislu_user = self.run("user", student_external_reference, "create")
             
-            dislu_course = self.dislu_api.request(CourseEndpoints.GET_EXTERNAL, "get", None, {"id": course_external_reference})
+            dislu_course = self.dislu_api.request(CourseEndpoints.GET_EXTERNAL, "get", {}, {"id": course_external_reference})
             if not dislu_course:
                 raise ValidationError("Course not found in Dislu with external reference", entity=entity, entity_id=course_external_reference)
 
             payload = {
                 "user_id": dislu_user.get("id"),
-                "course_id": dislu_course.get("id")
+                "course_id": dislu_course.get("id"),
+                "matriculation_key": dislu_course.get("matriculation_key")
             }
             
             connector_logger.info(f"Enrolling student {dislu_user.get('id')} in course {dislu_course.get('id')}")

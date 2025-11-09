@@ -9,7 +9,7 @@ from src.shared.provider import Provider
 from src.to_dislu.transformer.users_transformers import DisluUsersTransformer
 from src.to_dislu.transformer.roadmap_transformers import DisluRoadmapTransformer
 from src.to_dislu.transformer.study_material_transformers import DisluStudyMaterialTransformer
-from src.to_adaptaria.utils.endpoints import AdaptariaEndpoints
+from src.to_adaptaria.utils.endpoints import AdaptariaCourseEndpoints, AdaptariaEndpoints, AdaptariaInstituteEndpoints, AdaptariaSectionEndpoints
 from src.shared.logger import connector_logger
 
 
@@ -46,7 +46,6 @@ class DisluProvider(Provider):
               3.4.2. Obtener contents de la sección y crear study materials
         """
         from src.to_dislu.transformer.institution_transformers import DisluInstitutionTransformer
-        from src.to_adaptaria.utils.endpoints import AdaptariaInstituteEndpoints, AdaptariaCourseEndpoints, AdaptariaSectionEndpoints
         
         connector_logger.info(f"[INITIAL_SYNC] Iniciando sincronización inicial para institución: {self.institution_id}")
         
@@ -80,16 +79,17 @@ class DisluProvider(Provider):
         
         # 2.2 Obtener y crear estudiantes
         connector_logger.info(f"[INITIAL_SYNC] 2.2: Obteniendo estudiantes")
-        students_response = self.adaptaria_api.request(
+        students_response = (self.adaptaria_api.request(
             AdaptariaInstituteEndpoints.GET_STUDENTS,
             "get",
             {},
             {"id": self.institution_id}
-        )
+        ))
         adaptaria_students = students_response.get("data", []) if isinstance(students_response, dict) else students_response
         connector_logger.info(f"[INITIAL_SYNC] Creando {len(adaptaria_students)} estudiantes en Dislu")
         
         for student in adaptaria_students:
+            student:dict
             student_id = student.get("id")
             if student_id:
                 DisluUsersTransformer(self.institution_id).run("student", student_id, "create")
@@ -117,6 +117,7 @@ class DisluProvider(Provider):
         # PASO 3: Iterar por cada curso
         # =================================================================
         connector_logger.info(f"[INITIAL_SYNC] Paso 3: Obteniendo cursos del instituto")
+        
         courses_response = self.adaptaria_api.request(
             AdaptariaInstituteEndpoints.GET_COURSES,
             "get",
@@ -137,14 +138,15 @@ class DisluProvider(Provider):
             connector_logger.info(f"[INITIAL_SYNC] 3.1: Creando curso {course_id}")
             DisluCoursesTransformer(self.institution_id).run("course", course_id, "create")
             
-            # 3.2 Obtener el teacher del curso y crear user_x_course con role profesor
-            connector_logger.info(f"[INITIAL_SYNC] 3.2: Asignando profesor al curso {course_id}")
-            teacher_user_id = course.get("teacherUserId")
-            if teacher_user_id:
-                entity_id = f"{teacher_user_id}/{course_id}"
-                DisluUsersTransformer(self.institution_id).run("teacher", entity_id, "create")
-                connector_logger.info(f"[INITIAL_SYNC] ✓ Profesor {teacher_user_id} asignado")
-            
+            """ (DEPRECATED)
+            ## 3.2 Obtener el teacher del curso y crear user_x_course con role profesor
+            #connector_logger.info(f"[INITIAL_SYNC] 3.2: Asignando profesor al curso {course_id}")
+            #teacher_user_id = course.get("teacherUserId")
+            #if teacher_user_id:
+            #    entity_id = f"{teacher_user_id}/{course_id}"
+            #    DisluUsersTransformer(self.institution_id).run("teacher", entity_id, "create")
+            #    connector_logger.info(f"[INITIAL_SYNC] ✓ Profesor {teacher_user_id} asignado")
+
             # 3.3 Obtener students del curso y crear user_x_course con role student
             connector_logger.info(f"[INITIAL_SYNC] 3.3: Obteniendo estudiantes del curso {course_id}")
             course_students_response = self.adaptaria_api.request(
@@ -162,6 +164,7 @@ class DisluProvider(Provider):
                     # Crear la matrícula (user_x_course con role student)
                     entity_id = f"{student_id}/{course_id}"
                     DisluUsersTransformer(self.institution_id).run("student", entity_id, "create")
+            """
             
             # 3.4 Obtener secciones del curso e iterar
             connector_logger.info(f"[INITIAL_SYNC] 3.4: Obteniendo secciones del curso {course_id}")
@@ -175,13 +178,14 @@ class DisluProvider(Provider):
             connector_logger.info(f"[INITIAL_SYNC] Procesando {len(adaptaria_sections)} secciones")
             
             for section in adaptaria_sections:
+                section: dict
                 section_id = section.get("id")
                 if not section_id:
                     continue
                 
                 # 3.4.1 Crear la sección como roadmap
                 connector_logger.info(f"[INITIAL_SYNC] 3.4.1: Creando roadmap para sección {section_id}")
-                DisluRoadmapTransformer(self.institution_id).run("subject", section_id, "create")
+                DisluRoadmapTransformer(self.institution_id).run("subject", course_id + '/' + section_id, "create")
                 
                 # 3.4.2 Obtener contents y crear study materials
                 connector_logger.info(f"[INITIAL_SYNC] 3.4.2: Obteniendo contenidos de sección {section_id}")
@@ -202,4 +206,5 @@ class DisluProvider(Provider):
             connector_logger.info(f"[INITIAL_SYNC] ✓ Curso {course_id} completado")
         
         connector_logger.info(f"[INITIAL_SYNC] ✓✓✓ Sincronización inicial completada para institución: {self.institution_id} ✓✓✓")
+        #raise Exception("stop")
         return True

@@ -39,11 +39,12 @@ class DisluRoadmapTransformer(Transformer):
             adaptaria_course_id, adaptaria_section_id = entity_id.split("/")
             connector_logger.debug(f"Course: {adaptaria_course_id}, Section: {adaptaria_section_id}")
             
-            adaptaria_section = self.adaptaria_api.request(AdaptariaSectionEndpoints.GET, "get", None, {"courseId":adaptaria_course_id, "sectionId": adaptaria_section_id})
+            adaptaria_section = self.adaptaria_api.request(AdaptariaSectionEndpoints.GET, "get", {}, {"courseId":adaptaria_course_id, "sectionId": adaptaria_section_id})
+            print(adaptaria_section)
             if not adaptaria_section:
                 raise ValidationError("Section not found in Adaptaria", entity=entity, entity_id=adaptaria_section_id)
             
-            dislu_course = self.dislu_api.request(CourseEndpoints.GET_EXTERNAL, "get", None, {"id":adaptaria_course_id})
+            dislu_course = self.dislu_api.request(CourseEndpoints.GET_EXTERNAL, "get", {}, {"id":adaptaria_course_id})
             if not dislu_course:
                 raise ValidationError("Course not found in Dislu with external reference", entity=entity, entity_id=adaptaria_course_id)
 
@@ -88,11 +89,11 @@ class DisluRoadmapTransformer(Transformer):
             adaptaria_course_id, adaptaria_section_id = entity_id.split("/")
             connector_logger.debug(f"Course: {adaptaria_course_id}, Section: {adaptaria_section_id}")
             
-            adaptaria_section = self.adaptaria_api.request(AdaptariaSectionEndpoints.GET, "get", None, {"courseId":adaptaria_course_id, "sectionId": adaptaria_section_id})
+            adaptaria_section = self.adaptaria_api.request(AdaptariaSectionEndpoints.GET, "get", {}, {"courseId":adaptaria_course_id, "sectionId": adaptaria_section_id})
             if not adaptaria_section:
                 raise ValidationError("Section not found in Adaptaria", entity=entity, entity_id=adaptaria_section_id)
                 
-            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET_EXTERNAL, "get", None, {"id":adaptaria_section_id})
+            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET_EXTERNAL, "get", {}, {"id":adaptaria_section_id})
             if not dislu_roadmap:
                 raise ValidationError("Roadmap not found in Dislu with external reference", entity=entity, entity_id=adaptaria_section_id)
 

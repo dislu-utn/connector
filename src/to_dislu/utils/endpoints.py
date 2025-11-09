@@ -38,13 +38,13 @@ class DisluAPI:
         
         method = method.lower()
         if method == 'post':
+            print(f"[DisluAPI] POST {endpoint} | Headers: {kwargs.get('headers', {})} | Params: {url_params} | Payload: {payload}")
             response = requests.post(endpoint, json=payload, files=files, **kwargs)
         elif method == 'get':
             if "id" in url_params and not id_in_url:
                 endpoint += f"/{url_params["id"]}"
             elif "id" in payload and not id_in_url:
                 endpoint += f"/{payload["id"]}"
-            print(f"[DisluAPI] GET {endpoint} | Headers: {kwargs.get('headers', {})} | Params: {url_params} | Payload: {payload}")
             response = requests.get(endpoint, **kwargs)
         elif method == 'put':
             response = requests.put(endpoint, json=payload, **kwargs)
@@ -110,7 +110,7 @@ class UsersEndpoints(Enum):
     GET = DisluEndpoints.USERS.value + "/:id"
     GET_EXTERNAL = DisluEndpoints.USERS.value + "/get_external/:id" #Done
     GET_HASHED_PASSWORD = "/connector" + DisluEndpoints.USERS.value + "/get_hashed_password"
-    ENROLL = DisluEndpoints.USERS.value + "/enroll" 
+    ENROLL = "/connector" + DisluEndpoints.USERS.value + "/enroll" 
     ASSIGN_PROFESSOR = "/connector" + DisluEndpoints.USERS.value + "/assign_professor" 
 
 class UsersXCourseEndpoints(Enum):

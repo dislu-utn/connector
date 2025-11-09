@@ -35,7 +35,7 @@ class DisluInstitutionTransformer(Transformer):
             adaptaria_institute = self.adaptaria_api.request(
                 AdaptariaInstituteEndpoints.GET, 
                 "get", 
-                None, 
+                {}, 
                 {"id": entity_id}
             )
             if not adaptaria_institute:
@@ -81,7 +81,7 @@ class DisluInstitutionTransformer(Transformer):
             adaptaria_institute = self.adaptaria_api.request(
                 AdaptariaInstituteEndpoints.GET,
                 "get",
-                None,
+                {},
                 {"id": entity_id}
             )
             if not adaptaria_institute:
@@ -91,7 +91,7 @@ class DisluInstitutionTransformer(Transformer):
             dislu_institution = self.dislu_api.request(
                 InstitutionEndpoints.GET_EXTERNAL,
                 "get",
-                None,
+                {},
                 {"id": entity_id}
             )
             if not dislu_institution:

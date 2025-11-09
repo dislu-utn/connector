@@ -87,7 +87,9 @@ class AdaptariaAPI:
                 endpoint += f"/{url_params["id"]}"
             elif "id" in payload and not id_in_url:
                 endpoint += f"/{payload["id"]}"
+            # INSERT_YOUR_CODE
             response = requests.get(endpoint, cookies=cookies, **kwargs)
+
         elif method == 'put':
             response = requests.put(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'delete':

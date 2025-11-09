@@ -187,7 +187,7 @@ class AdaptariaUsersTransformer(Transformer):
                             "description": dislu_course.get("description") if dislu_course.get("description") else "Default description",
                             "matriculationCode": dislu_course.get("matriculation_key"),
                             "teacherUserId": adaptaria_user.get("id"),
-                            "image": "https://picsum.photos/300/200" #TODO: AGREGAR IMAGEN
+                            "image": dislu_course.get("image_link", "https://picsum.photos/300/200")
                         }
                     )
                     if not response or not response.get("id"):

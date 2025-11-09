@@ -84,9 +84,9 @@ class AdaptariaAPI:
             response = requests.post(endpoint, json=payload, cookies=cookies, files=files, **kwargs)
         elif method == 'get':
             if "id" in url_params and not id_in_url:
-                endpoint += f"/{url_params["id"]}"
+                endpoint += f"/{url_params['id']}"
             elif "id" in payload and not id_in_url:
-                endpoint += f"/{payload["id"]}"
+                endpoint += f"/{payload['id']}"
             # INSERT_YOUR_CODE
             response = requests.get(endpoint, cookies=cookies, **kwargs)
 
@@ -96,9 +96,9 @@ class AdaptariaAPI:
             response = requests.delete(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'patch':
             if "id" in url_params:
-                endpoint += f"/{url_params["id"]}"
+                endpoint += f"/{url_params['id']}"
             elif "id" in payload:
-                endpoint += f"/{payload["id"]}"
+                endpoint += f"/{payload['id']}"
             response = requests.patch(endpoint, json=payload, cookies=cookies, **kwargs)
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")

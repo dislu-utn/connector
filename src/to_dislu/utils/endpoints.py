@@ -42,9 +42,9 @@ class DisluAPI:
             response = requests.post(endpoint, json=payload, files=files, **kwargs)
         elif method == 'get':
             if "id" in url_params and not id_in_url:
-                endpoint += f"/{url_params["id"]}"
+                endpoint += f"/{url_params['id']}"
             elif "id" in payload and not id_in_url:
-                endpoint += f"/{payload["id"]}"
+                endpoint += f"/{payload['id']}"
             response = requests.get(endpoint, **kwargs)
         elif method == 'put':
             response = requests.put(endpoint, json=payload, **kwargs)

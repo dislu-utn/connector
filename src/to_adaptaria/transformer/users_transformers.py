@@ -38,7 +38,8 @@ class AdaptariaUsersTransformer(Transformer):
                 raise ValidationError(f"User not found in Dislu", entity=entity, entity_id=entity_id)
             
             if dislu_user.get("external_reference"):
-                 raise ValidationError("User in Dislu already has an external reference", entity=entity, entity_id=entity_id)
+                 connector_logger.error(f"User in Dislu already has an external reference - Entity: {entity}, ID: {entity_id}")
+                 return None
 
             connector_logger.debug(f"Retrieved Dislu user: {dislu_user.get('email')}")
             

@@ -49,7 +49,7 @@ class AdaptariaSubjectTransformer(Transformer):
                 raise ValidationError("Roadmap course external_reference is required", entity=entity, entity_id=entity_id)
             
             connector_logger.debug(f"Creating section: {dislu_roadmap.get('name')} for course {dislu_roadmap.get('course_id')}")
-            randomId = randint(1, 1000)
+            randomId = randint(1, 220)
             response = self.adaptaria_api.request(
                 AdaptariaSectionEndpoints.CREATE,
                 "post",
@@ -57,7 +57,7 @@ class AdaptariaSubjectTransformer(Transformer):
                     "name": dislu_roadmap.get("name"),
                     "description": dislu_roadmap.get("description") or "",
                     "visible": True,
-                    "image": f"https://picsum.photos/id/{randomId}/1200/800"
+                    "image": f"https://picsum.photos/id/{randomId}/900/600"
                 },
                 {
                     "courseId": dislu_course.get("external_reference")

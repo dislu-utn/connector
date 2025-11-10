@@ -1,3 +1,4 @@
+from random import randint
 import requests
 from src.to_dislu.utils.endpoints import CourseEndpoints, DisluEndpoints, InstitutionEndpoints, RoadmapEndpoints
 from src.shared.transformer import TransformedRequest, Transformer
@@ -48,7 +49,7 @@ class AdaptariaSubjectTransformer(Transformer):
                 raise ValidationError("Roadmap course external_reference is required", entity=entity, entity_id=entity_id)
             
             connector_logger.debug(f"Creating section: {dislu_roadmap.get('name')} for course {dislu_roadmap.get('course_id')}")
-            
+            randomId = randint(1, 1000)
             response = self.adaptaria_api.request(
                 AdaptariaSectionEndpoints.CREATE,
                 "post",
@@ -56,7 +57,7 @@ class AdaptariaSubjectTransformer(Transformer):
                     "name": dislu_roadmap.get("name"),
                     "description": dislu_roadmap.get("description") or "",
                     "visible": True,
-                    "image": "https://picsum.photos/300/200"
+                    "image": f"https://picsum.photos/id/{randomId}/1200/800"
                 },
                 {
                     "courseId": dislu_course.get("external_reference")

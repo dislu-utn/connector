@@ -181,7 +181,8 @@ class AdaptariaUsersTransformer(Transformer):
 
                 if not dislu_course.get("external_reference"):
                     if not (image_link := dislu_course.get("image_link")):
-                        image_link = "https://picsum.photos/300/200"
+                        randomId = randint(1, 1000)
+                        image_link = f"https://picsum.photos/id/{randomId}/1200/800"
                     response = self.adaptaria_api.request(
                         AdaptariaCourseEndpoints.CREATE,
                         "post",

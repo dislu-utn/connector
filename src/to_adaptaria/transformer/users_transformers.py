@@ -179,6 +179,8 @@ class AdaptariaUsersTransformer(Transformer):
                 connector_logger.info(f"User role updated to TEACHER successfully")
 
                 if not dislu_course.get("external_reference"):
+                    if not (image_link := dislu_course.get("image_link")):
+                        image_link = "https://picsum.photos/300/200"
                     response = self.adaptaria_api.request(
                         AdaptariaCourseEndpoints.CREATE,
                         "post",
@@ -187,7 +189,7 @@ class AdaptariaUsersTransformer(Transformer):
                             "description": dislu_course.get("description") if dislu_course.get("description") else "Default description",
                             "matriculationCode": dislu_course.get("matriculation_key"),
                             "teacherUserId": adaptaria_user.get("id"),
-                            "image": dislu_course.get("image_link", "https://picsum.photos/300/200")
+                            "image": image_link
                         }
                     )
                     if not response or not response.get("id"):

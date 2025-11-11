@@ -81,7 +81,11 @@ class AdaptariaAPI:
         method = method.lower()
         if method == 'post':
             connector_logger.info(f"[AdaptariaAPI] POST {endpoint} | Payload: {payload} | Files: {files} | Cookies: {cookies}")
-            response = requests.post(endpoint, json=payload, cookies=cookies, files=files, **kwargs)
+            # Si hay archivos, usar data= en lugar de json= para multipart/form-data
+            if files:
+                response = requests.post(endpoint, data=payload, cookies=cookies, files=files, **kwargs)
+            else:
+                response = requests.post(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'get':
             if "id" in url_params and not id_in_url:
                 endpoint += f"/{url_params['id']}"
@@ -155,7 +159,7 @@ class AdaptariaSectionEndpoints(Enum):
     GET_CONTENTS = '/connector/sections/:id/contents'
 
 class AdaptariaContentEndpoints(Enum):
-    CREATE = "/connector/contents/:sectionId"
+    CREATE = "/connector/courses/contents/:sectionId"
     GET =  '/connector/contents'
 
 class AdaptariaInstituteEndpoints(Enum):

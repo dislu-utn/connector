@@ -29,13 +29,13 @@ class DisluStudyMaterialTransformer(Transformer):
         try:
             connector_logger.info(f"Creating study material in Dislu from Adaptaria content - ID: {entity_id}")
             
-            adaptaria_content = self.adaptaria_api.request(AdaptariaContentEndpoints.GET, "get", None, {"id":entity_id})
+            adaptaria_content = self.adaptaria_api.request(AdaptariaContentEndpoints.GET, "get", {}, {"id":entity_id})
             if not adaptaria_content:
                 raise ValidationError("Content not found in Adaptaria", entity=entity, entity_id=entity_id)
             
             connector_logger.debug(f"Retrieved Adaptaria content: {adaptaria_content.get('title')}")
             
-            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET_EXTERNAL, "get", None, {"id": adaptaria_content.get("sectionId")})
+            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET_EXTERNAL, "get", {}, {"id": adaptaria_content.get("sectionId")})
 
             if not dislu_roadmap:
                 connector_logger.warning(f"Roadmap not found for content {entity_id}")

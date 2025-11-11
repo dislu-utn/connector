@@ -71,7 +71,7 @@ class DisluUsersTransformer(Transformer):
                 "email": adaptaria_user.get("email"),
                 "external_reference": entity_id,
                 "institution_id": dislu_institution.get("id"),
-                "is_admin": True if adaptaria_user.get("role") == "DIRECTOR" else False,
+                "is_admin": adaptaria_user.get("role") == "DIRECTOR",
                 "password": adaptaria_hashed_password
             }
 

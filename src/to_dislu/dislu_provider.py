@@ -78,7 +78,9 @@ class DisluProvider(Provider):
         connector_logger.info(f"[INITIAL_SYNC] Creando {len(adaptaria_directors)} directores en Dislu")
         
         for director in adaptaria_directors:
-            director_user_id = director.get("user", {}).get("id") if isinstance(director.get("user"), dict) else director.get("user")
+            director:dict
+            connector_logger.info(f"[DIRECTOR] Creando {director} ")
+            director_user_id = director.get("user", {}).get("_id")
             if director_user_id:
                 DisluUsersTransformer(self.institution_id).run("director", director_user_id, "create")
         

@@ -38,8 +38,10 @@ class DisluAPI:
         
         method = method.lower()
         if method == 'post':
-            print(f"[DisluAPI] POST {endpoint} | Headers: {kwargs.get('headers', {})} | Params: {url_params} | Payload: {payload}")
-            response = requests.post(endpoint, json=payload, files=files, **kwargs)
+            if files:
+                response = requests.post(endpoint, data=payload, files=files, **kwargs)
+            else:
+                response = requests.post(endpoint, json=payload, **kwargs)
         elif method == 'get':
             if "id" in url_params and not id_in_url:
                 endpoint += f"/{url_params['id']}"

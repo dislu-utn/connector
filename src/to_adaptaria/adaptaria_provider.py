@@ -111,9 +111,7 @@ class AdaptariaProvider(Provider):
                 if not (roadmap := roadmap.get("roadmap")):
                     continue
                 
-                print("ROADMAP")
-                print(roadmap)
-                AdaptariaSubjectTransformer(self.institution_id).run("roadmap", roadmap.get("id"), "create")
+                #AdaptariaSubjectTransformer(self.institution_id).run("roadmap", roadmap.get("id"), "create")
                 
                 """
                     # Agregar Content
@@ -125,6 +123,7 @@ class AdaptariaProvider(Provider):
                 print("STUDYMATERIALL")
                 for study_material in dislu_study_material:
                     study_material:dict
+                    print(study_material)
                     AdaptariaContentsTransformer(self.institution_id).run("study_material", study_material.get("id"), "create")
         except Exception as e: print(e)
 

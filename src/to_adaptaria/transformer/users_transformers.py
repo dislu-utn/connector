@@ -71,7 +71,8 @@ class AdaptariaUsersTransformer(Transformer):
                         "document":{
                             "type":"DNI",
                             "number": str(randint(10000000,99999999))
-                        }
+                        },
+                        "forcePasswordReset": False
                     }
                 )
             elif entity == "admin":
@@ -90,7 +91,8 @@ class AdaptariaUsersTransformer(Transformer):
                         "document":{
                             "type":"DNI",
                             "number": str(randint(10000000,99999999))
-                        }
+                        },
+                        "forcePasswordReset": False
                     }
                 )
             else:

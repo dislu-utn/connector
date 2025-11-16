@@ -193,7 +193,7 @@ class AdaptariaUsersTransformer(Transformer):
                 connector_logger.info(f"User role updated to TEACHER successfully, entity_id: {entity_id}")
 
 
-            if (entity == "professor") and dislu_course.get("external_reference"):
+            if (entity == "professor") and not dislu_course.get("external_reference"):
                 connector_logger(f"Entre Prof, ext entity_id: {entity_id}")
                 if not (image_link := dislu_course.get("image_link")):
                     randomId = randint(1, 220)

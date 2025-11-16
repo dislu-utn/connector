@@ -144,7 +144,7 @@ class AdaptariaUsersTransformer(Transformer):
         try:
             response = None
             connector_logger.info(f"Updating user in Adaptaria - Entity: {entity}, ID: {entity_id}")
-            
+            dislu_course = {}
             if "/" in entity_id:
                 user_dislu_id, course_dislu_id = entity_id.split("/")
                 dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", {}, {"id": course_dislu_id})
@@ -190,9 +190,11 @@ class AdaptariaUsersTransformer(Transformer):
                         "userId": dislu_user.get("external_reference")
                     }
                 )
-                connector_logger.info(f"User role updated to TEACHER successfully")
+                connector_logger.info(f"User role updated to TEACHER successfully, entity_id: {entity_id}")
+
 
             if (entity == "professor") and dislu_course.get("external_reference"):
+                connector_logger(f"Entre Prof, ext entity_id: {entity_id}")
                 if not (image_link := dislu_course.get("image_link")):
                     randomId = randint(1, 220)
                     image_link = f"https://picsum.photos/id/{randomId}/900/600"
@@ -209,7 +211,7 @@ class AdaptariaUsersTransformer(Transformer):
                 )
                 if not response or not response.get("id"):
                     raise APIRequestError("Failed to create course in Adaptaria", entity=entity, entity_id=entity_id)
-                connector_logger.info(f"Course created in Adaptaria - ID: {response.get('id')}")
+                connector_logger.info(f"Course created in Adaptaria - ID: {response.get('id')}, entity_id: {entity_id}")
 
                 self.dislu_api.update_external_reference(
                     CourseEndpoints.UPDATE, 
@@ -217,7 +219,7 @@ class AdaptariaUsersTransformer(Transformer):
                     response.get("id")
                 )
                 dislu_course["external_reference"] = response.get("id")
-                connector_logger.info(f"External reference updated in Dislu for course {course_dislu_id}")
+                connector_logger.info(f"External reference updated in Dislu for course {entity_id}")
                 #sleep(1)
 
 
@@ -247,7 +249,7 @@ class AdaptariaUsersTransformer(Transformer):
                 (entity == "student" and adaptaria_role == "STUDENT") or
                 (entity == "professor" and adaptaria_course.get("teacherUserId") and adaptaria_role == "STUDENT")
             ):
-
+                connector_logger(f"Entré stud entity_id: {entity_id}")
                 #Usuario se enroló a un curso o el profesor ya tiene un curso
                 connector_logger.info(f"Adding student {dislu_user.get('email')} to course {dislu_course.get('name')}")
                 response = self.adaptaria_api.request(
@@ -260,7 +262,7 @@ class AdaptariaUsersTransformer(Transformer):
                         "courseId": dislu_course.get("external_reference")
                     }
                 )
-                connector_logger.info(f"Student added to course successfully")
+                connector_logger.info(f"Student added to course successfully, entity_id: {entity_id}")
                 return response
             
             return response

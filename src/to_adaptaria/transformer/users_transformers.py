@@ -149,7 +149,7 @@ class AdaptariaUsersTransformer(Transformer):
                 user_dislu_id, course_dislu_id = entity_id.split("/")
                 dislu_course = self.dislu_api.request(CourseEndpoints.GET, "get", {}, {"id": course_dislu_id})
                 if not dislu_course:
-                    raise ValidationError(f"Course not found in Dislu", entity=entity, entity_id=course_dislu_id)
+                    raise ValidationError(f"Course not found in Dislu", entity=entity, entity_id=entity_id)
             else:
                 user_dislu_id = entity_id
 
@@ -158,12 +158,12 @@ class AdaptariaUsersTransformer(Transformer):
             # Obtener datos de Dislu
             dislu_user = self.dislu_api.request(UsersEndpoints.GET, "get", {}, {"id": user_dislu_id})
             if not dislu_user:
-                raise ValidationError(f"User not found in Dislu", entity=entity, entity_id=user_dislu_id)
+                raise ValidationError(f"User not found in Dislu", entity=entity, entity_id=entity_id)
             
 
             # Obtener referencias externas
             if not dislu_user.get("external_reference"):
-                raise ValidationError("User has no external reference in Adaptaria", entity=entity, entity_id=user_dislu_id)
+                raise ValidationError("User has no external reference in Adaptaria", entity=entity, entity_id=entity_id)
             
             # Obtener datos de Adaptaria
             adaptaria_user = self.adaptaria_api.request(AdaptariaEndpoints.USERS, "get", {"id": dislu_user.get("external_reference")})
@@ -208,7 +208,7 @@ class AdaptariaUsersTransformer(Transformer):
                         }
                     )
                     if not response or not response.get("id"):
-                        raise APIRequestError("Failed to create course in Adaptaria", entity=entity, entity_id=dislu_course.get("id"))
+                        raise APIRequestError("Failed to create course in Adaptaria", entity=entity, entity_id=entity_id)
                     connector_logger.info(f"Course created in Adaptaria - ID: {response.get('id')}")
 
                     self.dislu_api.update_external_reference(

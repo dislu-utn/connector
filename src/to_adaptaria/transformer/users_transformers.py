@@ -171,10 +171,10 @@ class AdaptariaUsersTransformer(Transformer):
                 raise APIRequestError("User not found in Adaptaria", entity=entity, entity_id=dislu_user.get("external_reference"))
                 
             adaptaria_role = adaptaria_user.get("role")
-            connector_logger.info(f"Adaptaria user role: {adaptaria_role}")
+            connector_logger.info(f"Adaptaria user role: {adaptaria_role}, Received role {entity}, entity_id: {entity_id}")
 
             if (entity == "user"):
-                connector_logger.info(f"Updating user fields for {dislu_user.get('email')}")
+                connector_logger.info(f"Updating user fields for {dislu_user.get('email')}, entity_id: {entity_id}")
                 return self.update_user_fields(dislu_user, adaptaria_user)
 
             if (entity == "professor") and (adaptaria_role == "STUDENT"):
@@ -225,7 +225,7 @@ class AdaptariaUsersTransformer(Transformer):
 
             if (entity == "admin"):
                 #Convertir a director
-                connector_logger.info(f"Converting user to DIRECTOR: {dislu_user.get('email')}")
+                connector_logger.info(f"Converting user to DIRECTOR: {dislu_user.get('email')}, entity_id: {entity_id}")
                 response = self.adaptaria_api.request(
                     AdaptariaUserEndpoints.UPDATE_ROLE,
                     "patch",
@@ -236,7 +236,7 @@ class AdaptariaUsersTransformer(Transformer):
                         "userId": dislu_user.get("external_reference")
                     }
                 )
-                connector_logger.info(f"User role updated to DIRECTOR successfully")
+                connector_logger.info(f"User role updated to DIRECTOR successfully, entity_id: {entity_id}")
                 return response
 
             adaptaria_course = self.adaptaria_api.request(AdaptariaCourseEndpoints.GET, "get", {"id": dislu_course.get("external_reference")})
@@ -251,7 +251,7 @@ class AdaptariaUsersTransformer(Transformer):
             ):
                 connector_logger(f"Entré stud entity_id: {entity_id}")
                 #Usuario se enroló a un curso o el profesor ya tiene un curso
-                connector_logger.info(f"Adding student {dislu_user.get('email')} to course {dislu_course.get('name')}")
+                connector_logger.info(f"Adding student {dislu_user.get('email')} to course {dislu_course.get('name')}, entity_id: {entity_id}")
                 response = self.adaptaria_api.request(
                     AdaptariaCourseEndpoints.ADD_STUDENT,
                     "post",
@@ -268,7 +268,7 @@ class AdaptariaUsersTransformer(Transformer):
             return response
                 
         except (ValidationError, APIRequestError) as e:
-            connector_logger.error(f"Validation/API error updating user: {str(e)}")
+            connector_logger.error(f"Validation/API error updating user: {str(e)}, entity_id: {entity_id}")
             raise
         except Exception as e:
             connector_logger.error(f"Unexpected error updating user in Adaptaria - Entity: {entity}, ID: {entity_id} | Error: {str(e)}", exc_info=True)

@@ -194,7 +194,6 @@ class AdaptariaUsersTransformer(Transformer):
 
 
             if (entity == "professor") and not dislu_course.get("external_reference"):
-                connector_logger(f"Entre Prof, ext entity_id: {entity_id}")
                 if not (image_link := dislu_course.get("image_link")):
                     randomId = randint(1, 220)
                     image_link = f"https://picsum.photos/id/{randomId}/900/600"
@@ -249,7 +248,6 @@ class AdaptariaUsersTransformer(Transformer):
                 (entity == "student" and adaptaria_role == "STUDENT") or
                 (entity == "professor" and adaptaria_course.get("teacherUserId") and adaptaria_role == "STUDENT")
             ):
-                connector_logger(f"Entré stud entity_id: {entity_id}")
                 #Usuario se enroló a un curso o el profesor ya tiene un curso
                 connector_logger.info(f"Adding student {dislu_user.get('email')} to course {dislu_course.get('name')}, entity_id: {entity_id}")
                 response = self.adaptaria_api.request(

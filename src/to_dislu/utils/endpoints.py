@@ -93,11 +93,11 @@ class InstitutionEndpoints(Enum):
     UPDATE = "/connector" + DisluEndpoints.INSTITUTIONS.value + "/update"
     GET = DisluEndpoints.INSTITUTIONS.value
     GET_EXTERNAL = DisluEndpoints.INSTITUTIONS.value + "/get_external/:id" #Done
-    LIST_ADMINS = DisluEndpoints.INSTITUTIONS.value + "/:id/admins"
-    LIST_USERS = DisluEndpoints.INSTITUTIONS.value + "/:id/users"
-    LIST_PROFESSORS = DisluEndpoints.INSTITUTIONS.value + "/:id/professors"
-    LIST_STUDENTS = DisluEndpoints.INSTITUTIONS.value + "/:id/students"
-    LIST_ROADMAPS = DisluEndpoints.INSTITUTIONS.value + "/:id/roadmaps"
+    LIST_ADMINS = "/connector" + DisluEndpoints.INSTITUTIONS.value + "/:id/admins"
+    LIST_USERS = "/connector" + DisluEndpoints.INSTITUTIONS.value + "/:id/users"
+    LIST_PROFESSORS = "/connector" +  DisluEndpoints.INSTITUTIONS.value + "/:id/professors"
+    LIST_STUDENTS = "/connector" + DisluEndpoints.INSTITUTIONS.value + "/:id/students"
+    LIST_ROADMAPS ="/connector" +  DisluEndpoints.INSTITUTIONS.value + "/:id/roadmaps"
 
 class CourseEndpoints(Enum):
     CREATE = "/connector" + DisluEndpoints.COURSES.value + "/create"

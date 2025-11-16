@@ -111,7 +111,7 @@ class AdaptariaProvider(Provider):
                 if not (roadmap := roadmap.get("roadmap")):
                     continue
                 
-                #AdaptariaSubjectTransformer(self.institution_id).run("roadmap", roadmap.get("id"), "create")
+                AdaptariaSubjectTransformer(self.institution_id).run("roadmap", roadmap.get("id"), "create")
                 
                 """
                     # Agregar Content

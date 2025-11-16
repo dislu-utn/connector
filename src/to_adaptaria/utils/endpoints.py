@@ -140,6 +140,7 @@ class AdaptariaCourseEndpoints(Enum):
 
 class AdaptariaUserEndpoints(Enum):
     GET = '/connector' + AdaptariaEndpoints.USERS.value
+    GET_BY_EMAIL = '/connector' + AdaptariaEndpoints.USERS.value + '/get_by_email'
     GET_HASHED_PASSWORD = '/connector' + AdaptariaEndpoints.USERS.value + '/get_hashed_password'
     UPDATE = '/connector' + AdaptariaEndpoints.USERS.value + "/me"
     UPDATE_ROLE = '/connector' + AdaptariaEndpoints.USERS.value + "/:userId/role"

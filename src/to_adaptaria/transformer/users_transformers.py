@@ -40,6 +40,17 @@ class AdaptariaUsersTransformer(Transformer):
             if dislu_user.get("external_reference"):
                  connector_logger.error(f"User in Dislu already has an external reference - Entity: {entity}, ID: {entity_id}")
                  return None
+                
+            adaptaria_user = self.adaptaria_api.request(AdaptariaUserEndpoints.GET_BY_EMAIL, "get", {}, {"id":dislu_user.get("email")})
+            if adaptaria_user:
+                self.dislu_api.update_external_reference(
+                UsersEndpoints.UPDATE, 
+                dislu_user.get("id"), 
+                adaptaria_user.get("id"))
+                connector_logger.info(f"External reference updated in Dislu for user {entity_id}")
+
+                return None
+            
 
             connector_logger.debug(f"Retrieved Dislu user: {dislu_user.get('email')}")
             

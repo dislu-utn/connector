@@ -210,11 +210,6 @@ class AdaptariaUsersTransformer(Transformer):
                     #sleep(1)
 
 
-            adaptaria_course = self.adaptaria_api.request(AdaptariaCourseEndpoints.GET, "get", {"id": dislu_course.get("external_reference")})
-            if not adaptaria_course:
-                raise APIRequestError("Course not found in Adaptaria", entity=entity, entity_id=dislu_course.get("external_reference"))
-
-
             if (entity == "admin"):
                 #Convertir a director
                 connector_logger.info(f"Converting user to DIRECTOR: {dislu_user.get('email')}")
@@ -230,6 +225,12 @@ class AdaptariaUsersTransformer(Transformer):
                 )
                 connector_logger.info(f"User role updated to DIRECTOR successfully")
                 return response
+
+            adaptaria_course = self.adaptaria_api.request(AdaptariaCourseEndpoints.GET, "get", {"id": dislu_course.get("external_reference")})
+            if not adaptaria_course:
+                connector_logger.warning("Course not found in Adaptaria", entity=entity, entity_id=dislu_course.get("external_reference"))
+                return None
+
 
             if (
                 (entity == "student" and adaptaria_role == "STUDENT") or

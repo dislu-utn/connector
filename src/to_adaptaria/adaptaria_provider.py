@@ -12,6 +12,8 @@ from src.to_adaptaria.utils.endpoints import AdaptariaEndpoints, AdaptariaInstit
 from src.to_dislu.transformer.courses_transformers import DisluCoursesTransformer
 from src.to_dislu.transformer.institution_transformers import DisluInstitutionTransformer
 from src.to_dislu.utils.endpoints import InstitutionEndpoints, RoadmapEndpoints, UsersEndpoints
+from src.shared.logger import connector_logger  # Asegúrate que el logger esté importado arriba
+
 
 
 class AdaptariaProvider(Provider):
@@ -105,14 +107,17 @@ class AdaptariaProvider(Provider):
             POST /courses/:courseId/section
             → Guarda: sectionId
             """
+
             dislu_roadmaps = self.dislu_api.request(InstitutionEndpoints.LIST_ROADMAPS, "get", {}, {"id": self.institution_id})
             for roadmap in dislu_roadmaps:
                 roadmap:dict
                 if not (roadmap := roadmap.get("roadmap")):
                     continue
-                
-                AdaptariaSubjectTransformer(self.institution_id).run("roadmap", roadmap.get("id"), "create")
-                
+                try:
+                    AdaptariaSubjectTransformer(self.institution_id).run("roadmap", roadmap.get("id"), "create")
+                except Exception as e:
+                    connector_logger.error(f"Error creando sección en Adaptaria para roadmap {roadmap.get('id')}: {str(e)}")
+                    continue
                 """
                     # Agregar Content
                     POST /courses/:courseId/sections/:sectionId/contents
@@ -120,11 +125,14 @@ class AdaptariaProvider(Provider):
                     Body: FormData con file + metadata
                 """
                 dislu_study_material  = self.dislu_api.request(RoadmapEndpoints.LIST_STUDY_MATERIALS, "get", {}, {"id":  roadmap.get("id")})
-                print("STUDYMATERIALL")
                 for study_material in dislu_study_material:
                     study_material:dict
-                    print(study_material)
-                    AdaptariaContentsTransformer(self.institution_id).run("study_material", study_material.get("id"), "create")
+                    try:
+                        AdaptariaContentsTransformer(self.institution_id).run("study_material", study_material.get("id"), "create")
+                    except Exception as e:
+                        connector_logger.error(
+                            f"Error agregando contenido en Adaptaria para estudio {study_material.get('id')} del roadmap {roadmap.get('id')}: {str(e)}"
+                        )
         except Exception as e: print(e)
 
 

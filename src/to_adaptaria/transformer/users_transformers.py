@@ -239,7 +239,7 @@ class AdaptariaUsersTransformer(Transformer):
 
             adaptaria_course = self.adaptaria_api.request(AdaptariaCourseEndpoints.GET, "get", {"id": dislu_course.get("external_reference")})
             if not adaptaria_course:
-                connector_logger.warning(f"Course not found in Adaptaria:  entity={entity}, entity_id={dislu_course.get('external_reference')}")
+                connector_logger.warning(f"Course not found in Adaptaria:  entity={entity}, entity_id={entity_id}")
                 return None
 
 

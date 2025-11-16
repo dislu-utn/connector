@@ -192,33 +192,33 @@ class AdaptariaUsersTransformer(Transformer):
                 )
                 connector_logger.info(f"User role updated to TEACHER successfully")
 
-                if not dislu_course.get("external_reference"):
-                    if not (image_link := dislu_course.get("image_link")):
-                        randomId = randint(1, 220)
-                        image_link = f"https://picsum.photos/id/{randomId}/900/600"
-                    response = self.adaptaria_api.request(
-                        AdaptariaCourseEndpoints.CREATE,
-                        "post",
-                        {
-                            "title": dislu_course.get("name") if dislu_course.get("name") else "Default course" ,
-                            "description": dislu_course.get("description") if dislu_course.get("description") else "Default description",
-                            "matriculationCode": dislu_course.get("matriculation_key"),
-                            "teacherUserId": adaptaria_user.get("id"),
-                            "image": image_link
-                        }
-                    )
-                    if not response or not response.get("id"):
-                        raise APIRequestError("Failed to create course in Adaptaria", entity=entity, entity_id=entity_id)
-                    connector_logger.info(f"Course created in Adaptaria - ID: {response.get('id')}")
+            if (entity == "professor") and dislu_course.get("external_reference"):
+                if not (image_link := dislu_course.get("image_link")):
+                    randomId = randint(1, 220)
+                    image_link = f"https://picsum.photos/id/{randomId}/900/600"
+                response = self.adaptaria_api.request(
+                    AdaptariaCourseEndpoints.CREATE,
+                    "post",
+                    {
+                        "title": dislu_course.get("name") if dislu_course.get("name") else "Default course" ,
+                        "description": dislu_course.get("description") if dislu_course.get("description") else "Default description",
+                        "matriculationCode": dislu_course.get("matriculation_key"),
+                        "teacherUserId": adaptaria_user.get("id"),
+                        "image": image_link
+                    }
+                )
+                if not response or not response.get("id"):
+                    raise APIRequestError("Failed to create course in Adaptaria", entity=entity, entity_id=entity_id)
+                connector_logger.info(f"Course created in Adaptaria - ID: {response.get('id')}")
 
-                    self.dislu_api.update_external_reference(
-                        CourseEndpoints.UPDATE, 
-                        dislu_course.get("id"), 
-                        response.get("id")
-                    )
-                    dislu_course["external_reference"] = response.get("id")
-                    connector_logger.info(f"External reference updated in Dislu for course {course_dislu_id}")
-                    #sleep(1)
+                self.dislu_api.update_external_reference(
+                    CourseEndpoints.UPDATE, 
+                    dislu_course.get("id"), 
+                    response.get("id")
+                )
+                dislu_course["external_reference"] = response.get("id")
+                connector_logger.info(f"External reference updated in Dislu for course {course_dislu_id}")
+                #sleep(1)
 
 
             if (entity == "admin"):

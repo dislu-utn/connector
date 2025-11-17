@@ -7,4 +7,4 @@ class IntegrateDTO(BaseModel):
     entity: str
     entity_id: str
     origin: str #dislu or adaptaria
-    method: Literal["sync", "create", "update"] #
+    method: Literal["sync", "create", "update", "delete"] #

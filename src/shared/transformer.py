@@ -24,6 +24,9 @@ class Transformer():
     @abstractmethod
     def update(self, entity_id:str, endpoint: str):
         pass
+    @abstractmethod
+    def delete(self, entity_id:str, endpoint: str):
+        pass
     
 @dataclass
 class TransformedRequest:

@@ -19,6 +19,10 @@ class AdaptariaSubjectTransformer(Transformer):
                 result = self.update(entity, entity_id)
                 connector_logger.info(f"Successfully updated section in Adaptaria - Entity: {entity}, ID: {entity_id}")
                 return result
+            if "delete" in method:
+                result = self.delete(entity, entity_id)
+                connector_logger.info(f"Successfully deleted section in Adaptaria - Entity: {entity}, ID: {entity_id}")
+                return result
             
             connector_logger.warning(f"No handler found for method: {method}")
             return None
@@ -140,4 +144,41 @@ class AdaptariaSubjectTransformer(Transformer):
         except Exception as e:
             connector_logger.error(f"Unexpected error updating section in Adaptaria - ID: {entity_id} | Error: {str(e)}", exc_info=True)
             raise APIRequestError(f"Failed to update section: {str(e)}", entity=entity, entity_id=entity_id)
+
+    def delete(self, entity: str, entity_id:str):
+        try:
+            connector_logger.info(f"Deleting section in Adaptaria - Roadmap ID: {entity_id}")
+            
+            dislu_roadmap = self.dislu_api.request(RoadmapEndpoints.GET, "get", {}, {"id": entity_id})
+            if not dislu_roadmap:
+                raise ValidationError("Roadmap not found in Dislu", entity=entity, entity_id=entity_id)
+            
+            if not dislu_roadmap.get("external_reference"):
+                raise ValidationError("Roadmap has no external reference", entity=entity, entity_id=entity_id)
+                
+            adaptaria_section = self.adaptaria_api.request(AdaptariaSectionEndpoints.GET, "get", {}, {"id": dislu_roadmap.get("external_reference")})
+            if not adaptaria_section:
+                raise ValidationError("Section not found in Adaptaria", entity=entity, entity_id=dislu_roadmap.get("external_reference"))
+
+
+            response = self.adaptaria_api.request(
+                AdaptariaSectionEndpoints.UPDATE,
+                "delete",
+                {
+                },
+                {
+                    "courseId": adaptaria_section.get("courseId"),
+                    "sectionId": dislu_roadmap.get("external_reference")
+                }
+            )
+            connector_logger.info(f"Section deleted successfully in Adaptaria")
+            return response
+            
+        except (ValidationError, APIRequestError) as e:
+            connector_logger.error(f"Validation/API error updating section: {str(e)}")
+            raise
+        except Exception as e:
+            connector_logger.error(f"Unexpected error deleting section in Adaptaria - ID: {entity_id} | Error: {str(e)}", exc_info=True)
+            raise APIRequestError(f"Failed to update section: {str(e)}", entity=entity, entity_id=entity_id)
+
 

@@ -97,7 +97,7 @@ class AdaptariaAPI:
         elif method == 'put':
             response = requests.put(endpoint, json=payload, cookies=cookies, **kwargs)
         elif method == 'delete':
-            response = requests.delete(endpoint, json=payload, cookies=cookies, **kwargs)
+            response = requests.delete(endpoint, cookies=cookies, **kwargs)
         elif method == 'patch':
             if "id" in url_params:
                 endpoint += f"/{url_params['id']}"
@@ -155,6 +155,7 @@ class AdaptariaDirectorEndponints(Enum):
 
 class AdaptariaSectionEndpoints(Enum):
     CREATE = '/connector' + AdaptariaEndpoints.COURSES.value + '/:courseId/sections'
+    DELETE = '/connector' + AdaptariaEndpoints.COURSES.value + '/:courseId/sections/:sectionId'
     UPDATE = '/connector' + AdaptariaEndpoints.COURSES.value + '/:courseId/sections/:sectionId'
     GET =  '/connector' + AdaptariaEndpoints.COURSES.value + "/:courseId/sections/:sectionId"
     GET_CONTENTS = '/connector/sections/:id/contents'

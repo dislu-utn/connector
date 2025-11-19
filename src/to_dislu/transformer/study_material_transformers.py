@@ -55,11 +55,14 @@ class DisluStudyMaterialTransformer(Transformer):
             
             # Obtener el nombre del archivo desde la key o usar un nombre por defecto
             file_key = adaptaria_content.get("key", "document.pdf")
-            file_name = adaptaria_content.get("title") if adaptaria_content.get("title") else file_key.split("/")[-1] if "/" in file_key else file_key
+            file_name: str = adaptaria_content.get("title") if adaptaria_content.get("title") else file_key.split("/")[-1] if "/" in file_key else file_key
             
             # Crear un objeto tipo archivo en memoria
             file_content = io.BytesIO(file_response.content)
             
+            if not file_name.endswith(".pdf"):
+                file_name += ".pdf"
+
             # Archivo a subir (en memoria)
             files = {
                 "file": (file_name, file_content, file_response.headers.get("content-type", "application/octet-stream"))
